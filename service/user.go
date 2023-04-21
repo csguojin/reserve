@@ -1,7 +1,6 @@
 package service
 
 import (
-	"log"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -11,11 +10,13 @@ import (
 	"github.com/csguojin/reserve/dal"
 	"github.com/csguojin/reserve/model"
 	"github.com/csguojin/reserve/util"
+	"github.com/csguojin/reserve/util/logger"
 )
 
 func CreateUser(user *model.User) (*model.User, error) {
 	passwordData, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
+		logger.Errorln(err)
 		return nil, err
 	}
 	user.Password = string(passwordData)
@@ -25,11 +26,12 @@ func CreateUser(user *model.User) (*model.User, error) {
 func CheckUser(username string, password string) (*model.User, error) {
 	user, err := dal.GetUserByName(dal.GetDB(), username)
 	if err != nil {
+		logger.Errorln(err)
 		return nil, err
 	}
 	err = verifyPassword(password, user.Password)
 	if err != nil {
-		log.Println(err)
+		logger.Errorln(err)
 		return nil, util.ErrUserAuthFail
 	}
 	return user, nil
@@ -47,6 +49,7 @@ func GenerateToken(user *model.User) (string, error) {
 	})
 	tokenStr, err := token.SignedString([]byte(viper.GetString("jwt.key")))
 	if err != nil {
+		logger.Errorln(err)
 		return "", err
 	}
 

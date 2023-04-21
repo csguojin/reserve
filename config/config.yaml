@@ -9,5 +9,14 @@ db:
     password: pass
     database: db
 
+log:
+  level: debug
+  # format: json
+  format: console
+  output: stdout
+  # output: file
+  # dir: ./logs
+  # file: app.log
+
 jwt:
   key: secret

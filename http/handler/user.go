@@ -8,6 +8,7 @@ import (
 	"github.com/csguojin/reserve/model"
 	"github.com/csguojin/reserve/service"
 	"github.com/csguojin/reserve/util"
+	"github.com/csguojin/reserve/util/logger"
 )
 
 type UserRsp struct {
@@ -20,11 +21,13 @@ func RegisterHandler(c *gin.Context) {
 	var user *model.User
 	err := c.ShouldBindJSON(&user)
 	if err != nil {
+		logger.Errorln(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	user, err = service.CreateUser(user)
 	if err != nil {
+		logger.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -53,6 +56,7 @@ func LoginHandler(c *gin.Context) {
 
 	user, err = service.CheckUser(user.Username, user.Password)
 	if err != nil {
+		logger.Errorln(err)
 		switch err {
 		case util.ErrUserNotFound:
 			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
@@ -66,6 +70,7 @@ func LoginHandler(c *gin.Context) {
 
 	token, err := service.GenerateToken(user)
 	if err != nil {
+		logger.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

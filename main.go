@@ -6,9 +6,12 @@ import (
 
 	_ "github.com/csguojin/reserve/config"
 	"github.com/csguojin/reserve/http/handler"
+	"github.com/csguojin/reserve/util/logger"
 )
 
 func main() {
+	defer logger.Logger.Sync()
+
 	router := gin.Default()
 
 	v1 := router.Group("api/v1")
