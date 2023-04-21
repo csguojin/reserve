@@ -14,6 +14,7 @@ func main() {
 	v1 := router.Group("api/v1")
 	{
 		v1.POST("/register", handler.RegisterHandler)
+		v1.POST("/login", handler.LoginHandler)
 	}
 
 	router.Run(":" + viper.GetString("server.port"))

@@ -8,3 +8,6 @@ db:
     username: user
     password: pass
     database: db
+
+jwt:
+  key: secret

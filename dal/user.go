@@ -26,3 +26,13 @@ func GetUser(db *gorm.DB, id int64) (*model.User, error) {
 	}
 	return user, nil
 }
+
+func GetUserByName(db *gorm.DB, username string) (*model.User, error) {
+	user := &model.User{}
+	err := db.Where(&model.User{Username: username}).First(user).Error
+	if err != nil {
+		log.Println(err)
+		return nil, util.ErrUserNotFound
+	}
+	return user, nil
+}
