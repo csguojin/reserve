@@ -35,6 +35,11 @@ func createDB() {
 		panic(err)
 	}
 
+	err = db.AutoMigrate(&model.Room{})
+	if err != nil {
+		panic(err)
+	}
+
 	DB = db
 }
 

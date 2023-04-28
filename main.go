@@ -18,6 +18,8 @@ func main() {
 	{
 		v1.POST("/register", handler.RegisterHandler)
 		v1.POST("/login", handler.LoginHandler)
+
+		v1.GET("/rooms", handler.GetAllRoomsHandler)
 	}
 
 	router.Run(":" + viper.GetString("server.port"))
