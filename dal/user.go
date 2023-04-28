@@ -17,7 +17,7 @@ func CeateUser(db *gorm.DB, user *model.User) (*model.User, error) {
 	return GetUser(db, user.ID)
 }
 
-func GetUser(db *gorm.DB, id int64) (*model.User, error) {
+func GetUser(db *gorm.DB, id int) (*model.User, error) {
 	user := &model.User{ID: id}
 	err := db.First(&user, id).Error
 	if err != nil {
