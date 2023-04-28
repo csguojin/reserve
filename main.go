@@ -20,6 +20,7 @@ func main() {
 		v1.POST("/login", handler.LoginHandler)
 
 		v1.GET("/rooms", handler.GetAllRoomsHandler)
+		v1.GET("/rooms/:room_id/seats", handler.GetAllSeatsHandler)
 	}
 
 	router.Run(":" + viper.GetString("server.port"))
