@@ -13,18 +13,21 @@ import (
 func CreateResv(db *gorm.DB, resv *model.Resv) (*model.Resv, error) {
 	tx := db.Begin()
 	if tx.Error != nil {
+		logger.L.Errorln(tx.Error)
 		return nil, tx.Error
 	}
 
 	var seat model.Seat
 	if err := tx.Where("id = ?", resv.SeatID).First(&seat).Error; err != nil {
 		tx.Rollback()
+		logger.L.Errorln(err)
 		return nil, err
 	}
 
 	var room model.Room
 	if err := tx.Where("id = ?", seat.RoomID).First(&room).Error; err != nil {
 		tx.Rollback()
+		logger.L.Errorln(err)
 		return nil, err
 	}
 
@@ -35,12 +38,15 @@ func CreateResv(db *gorm.DB, resv *model.Resv) (*model.Resv, error) {
 		Where("start_time < ? AND end_time > ?", resv.EndTime, resv.StartTime).
 		Count(&existingResvCount).Error; err != nil {
 		tx.Rollback()
+		logger.L.Errorln(err)
 		return nil, err
 	}
 
 	if existingResvCount > 0 {
 		tx.Rollback()
-		return nil, errors.New("reservation time conflict")
+		err := errors.New("reservation time conflict")
+		logger.L.Errorln(err)
+		return nil, err
 	}
 
 	now := time.Now()
@@ -48,10 +54,15 @@ func CreateResv(db *gorm.DB, resv *model.Resv) (*model.Resv, error) {
 
 	if err := tx.Create(resv).Error; err != nil {
 		tx.Rollback()
+		logger.L.Errorln(err)
 		return nil, err
 	}
 
-	tx.Commit()
+	err := tx.Commit().Error
+	if err != nil {
+		logger.L.Errorln(err)
+		return nil, err
+	}
 
 	return resv, nil
 }
@@ -60,7 +71,7 @@ func GetResv(db *gorm.DB, resvID int) (*model.Resv, error) {
 	resv := &model.Resv{ID: resvID}
 	err := db.First(&resv, resvID).Error
 	if err != nil {
-		logger.Errorln(err)
+		logger.L.Errorln(err)
 		return nil, err
 	}
 	return resv, nil
@@ -76,7 +87,7 @@ func UpdateResv(db *gorm.DB, resv *model.Resv) (*model.Resv, error) {
 			Status:      resv.Status,
 		}).Error
 	if err != nil {
-		logger.Errorln(err)
+		logger.L.Errorln(err)
 		return nil, err
 	}
 	return GetResv(db, resv.ID)
@@ -86,7 +97,7 @@ func GetResvsByUser(db *gorm.DB, userID int) ([]*model.Resv, error) {
 	var resvs []*model.Resv
 	err := db.Where(&model.Resv{UserID: userID}).Find(&resvs).Error
 	if err != nil {
-		logger.Errorln(err)
+		logger.L.Errorln(err)
 		return nil, err
 	}
 	return resvs, nil
@@ -96,7 +107,7 @@ func GetResvsBySeat(db *gorm.DB, seatID int) ([]*model.Resv, error) {
 	var resvs []*model.Resv
 	err := db.Where(&model.Resv{SeatID: seatID}).Find(&resvs).Error
 	if err != nil {
-		logger.Errorln(err)
+		logger.L.Errorln(err)
 		return nil, err
 	}
 	return resvs, nil

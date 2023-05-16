@@ -12,7 +12,7 @@ import (
 func GetAllRoomsHandler(c *gin.Context) {
 	rooms, err := service.GetAllRooms()
 	if err != nil {
-		logger.Errorln(err)
+		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, nil)
 		return
 	}

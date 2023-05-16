@@ -9,7 +9,7 @@ import (
 func GetAllSeats(roomID int) ([]*model.Seat, error) {
 	seats, err := dal.GetAllSeats(dal.GetDB(), roomID)
 	if err != nil {
-		logger.Errorln(err)
+		logger.L.Errorln(err)
 		return nil, err
 	}
 	return seats, nil

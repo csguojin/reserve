@@ -9,7 +9,7 @@ import (
 func GetAllRooms() ([]*model.Room, error) {
 	rooms, err := dal.GetAllRooms(dal.GetDB())
 	if err != nil {
-		logger.Errorln(err)
+		logger.L.Errorln(err)
 		return nil, err
 	}
 	return rooms, nil

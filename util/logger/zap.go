@@ -10,8 +10,6 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-var Logger *zap.SugaredLogger
-
 func init() {
 	encoder := getEncoder()
 
@@ -28,7 +26,7 @@ func init() {
 	core := zapcore.NewCore(encoder, writerSyncer, zapcore.DebugLevel)
 	logger := zap.New(core, zap.AddCaller())
 	sugarLogger := logger.Sugar()
-	Logger = sugarLogger
+	L = sugarLogger
 }
 
 func getEncoder() zapcore.Encoder {

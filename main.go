@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	defer logger.Logger.Sync()
+	defer logger.L.Sync()
 
 	router := gin.Default()
 

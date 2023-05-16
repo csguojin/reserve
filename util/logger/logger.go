@@ -1,13 +1,10 @@
 package logger
 
-func Errorln(args ...interface{}) {
-	Logger.Errorln(args)
+type Logger interface {
+	Errorln(args ...interface{})
+	Infoln(args ...interface{})
+	Debugln(args ...interface{})
+	Sync() error
 }
 
-func Infoln(args ...interface{}) {
-	Logger.Infoln(args)
-}
-
-func Debugln(args ...interface{}) {
-	Logger.Debugln(args)
-}
+var L Logger

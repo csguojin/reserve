@@ -16,21 +16,21 @@ import (
 func GetResvsByUserHandler(c *gin.Context) {
 	userIDStr := c.Param("user_id")
 	if userIDStr == "" {
-		logger.Errorln(util.ErrUserIDNil)
+		logger.L.Errorln(util.ErrUserIDNil)
 		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
 		return
 	}
 
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
-		logger.Errorln(err)
+		logger.L.Errorln(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	resvs, err := service.GetResvsByUser(userID)
 	if err != nil {
-		logger.Errorln(err)
+		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -41,14 +41,14 @@ func GetResvsByUserHandler(c *gin.Context) {
 func CreateResvHandler(c *gin.Context) {
 	userIDStr := c.Param("user_id")
 	if userIDStr == "" {
-		logger.Errorln(util.ErrUserIDNil)
+		logger.L.Errorln(util.ErrUserIDNil)
 		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
 		return
 	}
 
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
-		logger.Errorln(err)
+		logger.L.Errorln(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -56,7 +56,7 @@ func CreateResvHandler(c *gin.Context) {
 	var resv *model.Resv
 	err = c.ShouldBindJSON(&resv)
 	if err != nil {
-		logger.Errorln(err)
+		logger.L.Errorln(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -65,7 +65,7 @@ func CreateResvHandler(c *gin.Context) {
 		resv.EndTime == nil ||
 		!resv.EndTime.After(*resv.StartTime) ||
 		resv.EndTime.Sub(*resv.StartTime) >= time.Hour*24 {
-		logger.Errorln(util.ErrRequestBodyFormat)
+		logger.L.Errorln(util.ErrRequestBodyFormat)
 		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrRequestBodyFormat.Error()})
 		return
 	}
@@ -75,7 +75,7 @@ func CreateResvHandler(c *gin.Context) {
 
 	resv, err = service.CreateResv(resv)
 	if err != nil {
-		logger.Errorln(err)
+		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -86,28 +86,28 @@ func CreateResvHandler(c *gin.Context) {
 func UpdateResvHandler(c *gin.Context) {
 	userIDStr := c.Param("user_id")
 	if userIDStr == "" {
-		logger.Errorln(util.ErrUserIDNil)
+		logger.L.Errorln(util.ErrUserIDNil)
 		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
 		return
 	}
 
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
-		logger.Errorln(err)
+		logger.L.Errorln(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	resvIDStr := c.Param("resv_id")
 	if resvIDStr == "" {
-		logger.Errorln(util.ErrUserIDNil)
+		logger.L.Errorln(util.ErrUserIDNil)
 		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
 		return
 	}
 
 	resvID, err := strconv.Atoi(resvIDStr)
 	if err != nil {
-		logger.Errorln(err)
+		logger.L.Errorln(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -115,7 +115,7 @@ func UpdateResvHandler(c *gin.Context) {
 	var resv *model.Resv
 	err = c.ShouldBindJSON(&resv)
 	if err != nil {
-		logger.Errorln(err)
+		logger.L.Errorln(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -124,7 +124,7 @@ func UpdateResvHandler(c *gin.Context) {
 
 	resv, err = service.UpdateResv(resv)
 	if err != nil {
-		logger.Errorln(err)
+		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
