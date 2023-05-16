@@ -24,9 +24,23 @@ func CreateResv(db *gorm.DB, resv *model.Resv) (*model.Resv, error) {
 		return nil, err
 	}
 
-	var room model.Room
+	if seat.Status != 0 {
+		tx.Rollback()
+		err := errors.New("seat is not available")
+		logger.L.Errorln(err)
+		return nil, err
+	}
+
+	var room *model.Room
 	if err := tx.Where("id = ?", seat.RoomID).First(&room).Error; err != nil {
 		tx.Rollback()
+		logger.L.Errorln(err)
+		return nil, err
+	}
+
+	if ok := checkRoomResv(room, resv); !ok {
+		tx.Rollback()
+		err := errors.New("room is not available")
 		logger.L.Errorln(err)
 		return nil, err
 	}
@@ -65,6 +79,30 @@ func CreateResv(db *gorm.DB, resv *model.Resv) (*model.Resv, error) {
 	}
 
 	return resv, nil
+}
+
+func checkRoomResv(room *model.Room, resv *model.Resv) bool {
+	if room.Status != 0 {
+		logger.L.Errorln("room status is not 0")
+		return false
+	}
+	layout := "15:04:05"
+	openTime, err := time.Parse(layout, room.OpenTime)
+	if err != nil {
+		logger.L.Errorln("room opentime format error", room.OpenTime)
+		return false
+	}
+	closeTime, err := time.Parse(layout, room.CloseTime)
+	if err != nil {
+		logger.L.Errorln("room closetime format error", room.CloseTime)
+		return false
+	}
+	return resv.StartTime.Hour() >= openTime.Hour() &&
+		resv.StartTime.Minute() >= openTime.Minute() &&
+		resv.StartTime.Second() >= openTime.Second() &&
+		resv.EndTime.Hour() <= closeTime.Hour() &&
+		resv.EndTime.Minute() <= closeTime.Minute() &&
+		resv.EndTime.Second() <= closeTime.Second()
 }
 
 func GetResv(db *gorm.DB, resvID int) (*model.Resv, error) {
