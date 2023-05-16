@@ -13,7 +13,17 @@ func GetAllSeats(db *gorm.DB, roomID int) ([]*model.Seat, error) {
 	err := db.Where(&model.Seat{RoomID: roomID}).Find(&seats).Error
 	if err != nil {
 		logger.Errorln(err)
-		return nil, util.ErrRoomNotFound
+		return nil, err
 	}
 	return seats, nil
+}
+
+func GetSeat(db *gorm.DB, id int) (*model.Seat, error) {
+	seat := &model.Seat{ID: id}
+	err := db.First(&seat, id).Error
+	if err != nil {
+		logger.Errorln(err)
+		return nil, util.ErrSeatNotFound
+	}
+	return seat, nil
 }

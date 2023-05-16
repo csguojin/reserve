@@ -1,6 +1,7 @@
 package dal
 
 import (
+	"errors"
 	"time"
 
 	"gorm.io/gorm"
@@ -10,14 +11,49 @@ import (
 )
 
 func CreateResv(db *gorm.DB, resv *model.Resv) (*model.Resv, error) {
-	now := time.Now()
-	resv.CreateTime = &now
-	err := db.Create(resv).Error
-	if err != nil {
-		logger.Errorln(err)
+	tx := db.Begin()
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	var seat model.Seat
+	if err := tx.Where("id = ?", resv.SeatID).First(&seat).Error; err != nil {
+		tx.Rollback()
 		return nil, err
 	}
-	return GetResv(db, resv.ID)
+
+	var room model.Room
+	if err := tx.Where("id = ?", seat.RoomID).First(&room).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	var existingResvCount int64
+	if err := tx.
+		Model(&model.Resv{}).
+		Where("seat_id = ?", resv.SeatID).
+		Where("start_time < ? AND end_time > ?", resv.EndTime, resv.StartTime).
+		Count(&existingResvCount).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	if existingResvCount > 0 {
+		tx.Rollback()
+		return nil, errors.New("reservation time conflict")
+	}
+
+	now := time.Now()
+	resv.CreateTime = &now
+
+	if err := tx.Create(resv).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	tx.Commit()
+
+	return resv, nil
 }
 
 func GetResv(db *gorm.DB, resvID int) (*model.Resv, error) {
