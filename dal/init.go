@@ -45,6 +45,11 @@ func createDB() {
 		panic(err)
 	}
 
+	err = db.AutoMigrate(&model.Resv{})
+	if err != nil {
+		panic(err)
+	}
+
 	DB = db
 }
 

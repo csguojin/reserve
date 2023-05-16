@@ -21,6 +21,10 @@ func main() {
 
 		v1.GET("/rooms", handler.GetAllRoomsHandler)
 		v1.GET("/rooms/:room_id/seats", handler.GetAllSeatsHandler)
+
+		v1.GET("/users/:user_id/reservations", handler.GetResvsByUserHandler)
+		v1.POST("/users/:user_id/reservations", handler.CreateResvHandler)
+		v1.PUT("/users/:user_id/reservations/:resv_id", handler.UpdateResvHandler)
 	}
 
 	router.Run(":" + viper.GetString("server.port"))

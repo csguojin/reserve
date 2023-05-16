@@ -5,6 +5,7 @@ import "errors"
 var (
 	ErrUserNotFound = errors.New("user not found")
 	ErrUserAuthFail = errors.New("username or password error")
+	ErrUserIDNil    = errors.New("user id is nil")
 )
 
 var (
