@@ -11,3 +11,7 @@ var (
 var (
 	ErrRoomNotFound = errors.New("room not found")
 )
+
+var (
+	ErrRequestBodyFormat = errors.New("body is missing or illegal")
+)

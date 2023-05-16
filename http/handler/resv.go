@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -59,7 +60,18 @@ func CreateResvHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	if resv.SeatID <= 0 ||
+		resv.StartTime == nil ||
+		resv.EndTime == nil ||
+		!resv.EndTime.After(*resv.StartTime) ||
+		resv.EndTime.Sub(*resv.StartTime) >= time.Hour*24 {
+		logger.Errorln(util.ErrRequestBodyFormat)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrRequestBodyFormat.Error()})
+		return
+	}
+
 	resv.UserID = userID
+	resv.Status = 0
 
 	resv, err = service.CreateResv(resv)
 	if err != nil {
