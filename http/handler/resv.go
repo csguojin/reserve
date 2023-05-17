@@ -83,55 +83,6 @@ func CreateResvHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, &resv)
 }
 
-func UpdateResvHandler(c *gin.Context) {
-	userIDStr := c.Param("user_id")
-	if userIDStr == "" {
-		logger.L.Errorln(util.ErrUserIDNil)
-		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
-		return
-	}
-
-	userID, err := strconv.Atoi(userIDStr)
-	if err != nil {
-		logger.L.Errorln(err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	resvIDStr := c.Param("resv_id")
-	if resvIDStr == "" {
-		logger.L.Errorln(util.ErrUserIDNil)
-		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
-		return
-	}
-
-	resvID, err := strconv.Atoi(resvIDStr)
-	if err != nil {
-		logger.L.Errorln(err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	var resv *model.Resv
-	err = c.ShouldBindJSON(&resv)
-	if err != nil {
-		logger.L.Errorln(err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	resv.ID = resvID
-	resv.UserID = userID
-
-	resv, err = service.UpdateResv(resv)
-	if err != nil {
-		logger.L.Errorln(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, &resv)
-}
-
 func SigninHandler(c *gin.Context) {
 	userIDStr := c.Param("user_id")
 	if userIDStr == "" {

@@ -24,7 +24,6 @@ func main() {
 
 		v1.GET("/users/:user_id/reservations", handler.GetResvsByUserHandler)
 		v1.POST("/users/:user_id/reservations", handler.CreateResvHandler)
-		v1.PUT("/users/:user_id/reservations/:resv_id", handler.UpdateResvHandler)
 
 		v1.POST("/users/:user_id/reservations/:resv_id/signin", handler.SigninHandler)
 		v1.POST("/users/:user_id/reservations/:resv_id/signout", handler.SignoutHandler)
