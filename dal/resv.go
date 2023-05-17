@@ -18,7 +18,10 @@ func CreateResv(db *gorm.DB, resv *model.Resv) (*model.Resv, error) {
 	}
 
 	var seat model.Seat
-	if err := tx.Where("id = ?", resv.SeatID).First(&seat).Error; err != nil {
+	if err := tx.
+		Where("id = ?", resv.SeatID).
+		Where("status = ?", 0).
+		First(&seat).Error; err != nil {
 		tx.Rollback()
 		logger.L.Errorln(err)
 		return nil, err
@@ -32,7 +35,10 @@ func CreateResv(db *gorm.DB, resv *model.Resv) (*model.Resv, error) {
 	}
 
 	var room *model.Room
-	if err := tx.Where("id = ?", seat.RoomID).First(&room).Error; err != nil {
+	if err := tx.
+		Where("id = ?", seat.RoomID).
+		Where("status = ?", 0).
+		First(&room).Error; err != nil {
 		tx.Rollback()
 		logger.L.Errorln(err)
 		return nil, err
@@ -50,6 +56,7 @@ func CreateResv(db *gorm.DB, resv *model.Resv) (*model.Resv, error) {
 		Model(&model.Resv{}).
 		Where("seat_id = ?", resv.SeatID).
 		Where("start_time < ? AND end_time > ?", resv.EndTime, resv.StartTime).
+		Where("status = ?", 0).
 		Count(&existingResvCount).Error; err != nil {
 		tx.Rollback()
 		logger.L.Errorln(err)
@@ -58,7 +65,26 @@ func CreateResv(db *gorm.DB, resv *model.Resv) (*model.Resv, error) {
 
 	if existingResvCount > 0 {
 		tx.Rollback()
-		err := errors.New("reservation time conflict")
+		err := errors.New("seat reservation time conflict")
+		logger.L.Errorln(err)
+		return nil, err
+	}
+
+	existingResvCount = 0
+	if err := tx.
+		Model(&model.Resv{}).
+		Where("user_id = ?", resv.UserID).
+		Where("start_time < ? AND end_time > ?", resv.EndTime, resv.StartTime).
+		Where("status = ?", 0).
+		Count(&existingResvCount).Error; err != nil {
+		tx.Rollback()
+		logger.L.Errorln(err)
+		return nil, err
+	}
+
+	if existingResvCount > 0 {
+		tx.Rollback()
+		err := errors.New("user reservation time conflict")
 		logger.L.Errorln(err)
 		return nil, err
 	}
@@ -82,10 +108,6 @@ func CreateResv(db *gorm.DB, resv *model.Resv) (*model.Resv, error) {
 }
 
 func checkRoomResv(room *model.Room, resv *model.Resv) bool {
-	if room.Status != 0 {
-		logger.L.Errorln("room status is not 0")
-		return false
-	}
 	layout := "15:04:05"
 	openTime, err := time.Parse(layout, room.OpenTime)
 	if err != nil {
