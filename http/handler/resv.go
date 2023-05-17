@@ -131,3 +131,121 @@ func UpdateResvHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, &resv)
 }
+
+func SigninHandler(c *gin.Context) {
+	userIDStr := c.Param("user_id")
+	if userIDStr == "" {
+		logger.L.Errorln(util.ErrUserIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
+		return
+	}
+
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		logger.L.Errorln(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	resvIDStr := c.Param("resv_id")
+	if resvIDStr == "" {
+		logger.L.Errorln(util.ErrUserIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
+		return
+	}
+
+	resvID, err := strconv.Atoi(resvIDStr)
+	if err != nil {
+		logger.L.Errorln(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	resv, err := service.Signin(resvID, userID)
+	if err != nil {
+		logger.L.Errorln(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, &resv)
+}
+
+func SignoutHandler(c *gin.Context) {
+	userIDStr := c.Param("user_id")
+	if userIDStr == "" {
+		logger.L.Errorln(util.ErrUserIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
+		return
+	}
+
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		logger.L.Errorln(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	resvIDStr := c.Param("resv_id")
+	if resvIDStr == "" {
+		logger.L.Errorln(util.ErrUserIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
+		return
+	}
+
+	resvID, err := strconv.Atoi(resvIDStr)
+	if err != nil {
+		logger.L.Errorln(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	resv, err := service.Signout(resvID, userID)
+	if err != nil {
+		logger.L.Errorln(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, &resv)
+}
+
+func CancelResvHandler(c *gin.Context) {
+
+	userIDStr := c.Param("user_id")
+	if userIDStr == "" {
+		logger.L.Errorln(util.ErrUserIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
+		return
+	}
+
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		logger.L.Errorln(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	resvIDStr := c.Param("resv_id")
+	if resvIDStr == "" {
+		logger.L.Errorln(util.ErrUserIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
+		return
+	}
+
+	resvID, err := strconv.Atoi(resvIDStr)
+	if err != nil {
+		logger.L.Errorln(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	resv, err := service.CancelResv(resvID, userID)
+	if err != nil {
+		logger.L.Errorln(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, &resv)
+}
