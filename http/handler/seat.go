@@ -77,7 +77,7 @@ func CreateSeatHandler(c *gin.Context) {
 func GetSeatHandler(c *gin.Context) {
 	seatIDStr := c.Param("seat_id")
 	if seatIDStr == "" {
-		logger.L.Errorln("room id is nil")
+		logger.L.Errorln("seat id is nil")
 		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrSeatNotFound})
 		return
 	}
@@ -101,7 +101,7 @@ func GetSeatHandler(c *gin.Context) {
 func UpdateSeatHandler(c *gin.Context) {
 	seatIDStr := c.Param("seat_id")
 	if seatIDStr == "" {
-		logger.L.Errorln("room id is nil")
+		logger.L.Errorln("seat id is nil")
 		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrSeatNotFound})
 		return
 	}
@@ -133,7 +133,7 @@ func UpdateSeatHandler(c *gin.Context) {
 func DeleteSeatHandler(c *gin.Context) {
 	seatIDStr := c.Param("seat_id")
 	if seatIDStr == "" {
-		logger.L.Errorln("room id is nil")
+		logger.L.Errorln("seat id is nil")
 		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrSeatNotFound})
 		return
 	}

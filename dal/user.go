@@ -8,6 +8,16 @@ import (
 	"github.com/csguojin/reserve/util/logger"
 )
 
+func GetAllUsers(db *gorm.DB) ([]*model.User, error) {
+	var users []*model.User
+	err := db.Find(&users).Error
+	if err != nil {
+		logger.L.Errorln(err)
+		return nil, err
+	}
+	return users, nil
+}
+
 func CeateUser(db *gorm.DB, user *model.User) (*model.User, error) {
 	err := db.Create(user).Error
 	if err != nil {
@@ -35,4 +45,13 @@ func GetUserByName(db *gorm.DB, username string) (*model.User, error) {
 		return nil, util.ErrUserNotFound
 	}
 	return user, nil
+}
+
+func DeleteUser(db *gorm.DB, userID int) error {
+	err := db.Delete(&model.User{}, userID).Error
+	if err != nil {
+		logger.L.Errorln(err)
+		return err
+	}
+	return nil
 }

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 
@@ -42,6 +43,7 @@ func RegisterHandler(c *gin.Context) {
 }
 
 type UserLoginRsp struct {
+	ID       int    `json:"id"`
 	Username string `json:"username" `
 	Token    string `json:"token"`
 }
@@ -76,9 +78,85 @@ func LoginHandler(c *gin.Context) {
 	}
 
 	userRsp := &UserLoginRsp{
+		ID:       user.ID,
 		Username: user.Username,
 		Token:    token,
 	}
 
 	c.JSON(http.StatusOK, userRsp)
+}
+
+func GetAllUsersHandler(c *gin.Context) {
+	users, err := service.GetAllUsers()
+	if err != nil {
+		logger.L.Errorln(err)
+		c.JSON(http.StatusInternalServerError, nil)
+		return
+	}
+
+	var usersRsp []*UserRsp
+	for _, v := range users {
+		usersRsp = append(usersRsp, &UserRsp{
+			ID:       v.ID,
+			Username: v.Username,
+			Email:    v.Email,
+		})
+	}
+
+	c.JSON(http.StatusOK, usersRsp)
+}
+
+func GetUserHandler(c *gin.Context) {
+	userIDStr := c.Param("user_id")
+	if userIDStr == "" {
+		logger.L.Errorln("user id is nil")
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserNotFound})
+		return
+	}
+
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		logger.L.Errorln(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := service.GetUserNoPassword(userID)
+	if err != nil {
+		logger.L.Errorln(err)
+		c.JSON(http.StatusInternalServerError, nil)
+		return
+	}
+
+	userRsp := &UserRsp{
+		ID:       user.ID,
+		Username: user.Username,
+		Email:    user.Email,
+	}
+
+	c.JSON(http.StatusOK, userRsp)
+}
+
+func DeleteUserHandler(c *gin.Context) {
+	userIDStr := c.Param("user_id")
+	if userIDStr == "" {
+		logger.L.Errorln("user id is nil")
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserNotFound})
+		return
+	}
+
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		logger.L.Errorln(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = service.DeleteUser(userID)
+	if err != nil {
+		logger.L.Errorln(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, nil)
 }

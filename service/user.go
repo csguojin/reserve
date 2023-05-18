@@ -55,3 +55,31 @@ func GenerateToken(user *model.User) (string, error) {
 
 	return tokenStr, nil
 }
+
+func GetAllUsers() ([]*model.User, error) {
+	users, err := dal.GetAllUsers(dal.GetDB())
+	if err != nil {
+		logger.L.Errorln(err)
+		return nil, err
+	}
+	return users, nil
+}
+
+func GetUserNoPassword(userID int) (*model.User, error) {
+	user, err := dal.GetUser(dal.GetDB(), userID)
+	user.Password = ""
+	if err != nil {
+		logger.L.Errorln(err)
+		return nil, err
+	}
+	return user, nil
+}
+
+func DeleteUser(userID int) error {
+	err := dal.DeleteUser(dal.GetDB(), userID)
+	if err != nil {
+		logger.L.Errorln(err)
+		return err
+	}
+	return nil
+}
