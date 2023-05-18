@@ -37,17 +37,13 @@ func CheckUser(username string, password string) (*model.User, error) {
 	return user, nil
 }
 
-func verifyPassword(password, hashedPassword string) error {
-	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
-}
-
 func GenerateToken(user *model.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userid":   user.ID,
 		"username": user.Username,
 		"exp":      time.Now().Add(time.Hour).Unix(),
 	})
-	tokenStr, err := token.SignedString([]byte(viper.GetString("jwt.key")))
+	tokenStr, err := token.SignedString([]byte(viper.GetString("jwt.userkey")))
 	if err != nil {
 		logger.L.Errorln(err)
 		return "", err
@@ -82,4 +78,8 @@ func DeleteUser(userID int) error {
 		return err
 	}
 	return nil
+}
+
+func verifyPassword(password, hashedPassword string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }

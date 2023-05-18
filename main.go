@@ -6,6 +6,7 @@ import (
 
 	_ "github.com/csguojin/reserve/config"
 	"github.com/csguojin/reserve/http/handler"
+	"github.com/csguojin/reserve/http/middleware"
 	"github.com/csguojin/reserve/util/logger"
 )
 
@@ -22,31 +23,37 @@ func main() {
 		v1.GET("/rooms", handler.GetAllRoomsHandler)
 		v1.GET("/rooms/:room_id/seats", handler.GetAllSeatsHandler)
 
-		v1.GET("/users/:user_id/reservations", handler.GetResvsByUserHandler)
-		v1.POST("/users/:user_id/reservations", handler.CreateResvHandler)
+		v1.GET("/users/:user_id/reservations", middleware.AuthUserMiddleware(), handler.GetResvsByUserHandler)
+		v1.POST("/users/:user_id/reservations", middleware.AuthUserMiddleware(), handler.CreateResvHandler)
 
-		v1.POST("/users/:user_id/reservations/:resv_id/signin", handler.SigninHandler)
-		v1.POST("/users/:user_id/reservations/:resv_id/signout", handler.SignoutHandler)
-		v1.POST("/users/:user_id/reservations/:resv_id/cancel", handler.CancelResvHandler)
+		v1.POST("/users/:user_id/reservations/:resv_id/signin", middleware.AuthUserMiddleware(), handler.SigninHandler)
+		v1.POST("/users/:user_id/reservations/:resv_id/signout", middleware.AuthUserMiddleware(), handler.SignoutHandler)
+		v1.POST("/users/:user_id/reservations/:resv_id/cancel", middleware.AuthUserMiddleware(), handler.CancelResvHandler)
 	}
 
 	admin := v1.Group("admin")
 	{
-		admin.GET("/rooms", handler.GetAllRoomsHandler)
-		admin.POST("/rooms", handler.CreateRoomHandler)
-		admin.GET("/rooms/:room_id", handler.GetRoomHandler)
-		admin.PUT("/rooms/:room_id", handler.UpdateRoomHandler)
-		admin.DELETE("/rooms/:room_id", handler.DeleteRoomHandler)
+		admin.POST("/login", handler.AdminLoginHandler)
+		admin.GET("/admins", middleware.AuthAdminMiddleware(), handler.GetAllAdminsHandler)
+		admin.POST("/admins", middleware.AuthAdminMiddleware(), handler.CreateAdminHandler)
+		admin.GET("/admins/:admin_id", middleware.AuthAdminMiddleware(), handler.GetAdminHandler)
+		admin.DELETE("/admins/:admin_id", middleware.AuthAdminMiddleware(), handler.DeleteAdminHandler)
 
-		admin.GET("/rooms/:room_id/seats", handler.GetAllSeatsHandler)
-		admin.POST("/rooms/:room_id/seats", handler.CreateSeatHandler)
-		admin.GET("/rooms/:room_id/seats/:seat_id", handler.GetSeatHandler)
-		admin.PUT("/rooms/:room_id/seats/:seat_id", handler.UpdateSeatHandler)
-		admin.DELETE("/rooms/:room_id/seats/:seat_id", handler.DeleteSeatHandler)
+		admin.GET("/rooms", middleware.AuthAdminMiddleware(), handler.GetAllRoomsHandler)
+		admin.POST("/rooms", middleware.AuthAdminMiddleware(), handler.CreateRoomHandler)
+		admin.GET("/rooms/:room_id", middleware.AuthAdminMiddleware(), handler.GetRoomHandler)
+		admin.PUT("/rooms/:room_id", middleware.AuthAdminMiddleware(), handler.UpdateRoomHandler)
+		admin.DELETE("/rooms/:room_id", middleware.AuthAdminMiddleware(), handler.DeleteRoomHandler)
 
-		admin.GET("/users", handler.GetAllUsersHandler)
-		admin.GET("/users/:user_id", handler.GetUserHandler)
-		admin.DELETE("/users/:user_id", handler.DeleteUserHandler)
+		admin.GET("/rooms/:room_id/seats", middleware.AuthAdminMiddleware(), handler.GetAllSeatsHandler)
+		admin.POST("/rooms/:room_id/seats", middleware.AuthAdminMiddleware(), handler.CreateSeatHandler)
+		admin.GET("/rooms/:room_id/seats/:seat_id", middleware.AuthAdminMiddleware(), handler.GetSeatHandler)
+		admin.PUT("/rooms/:room_id/seats/:seat_id", middleware.AuthAdminMiddleware(), handler.UpdateSeatHandler)
+		admin.DELETE("/rooms/:room_id/seats/:seat_id", middleware.AuthAdminMiddleware(), handler.DeleteSeatHandler)
+
+		admin.GET("/users", middleware.AuthAdminMiddleware(), handler.GetAllUsersHandler)
+		admin.GET("/users/:user_id", middleware.AuthAdminMiddleware(), handler.GetUserHandler)
+		admin.DELETE("/users/:user_id", middleware.AuthAdminMiddleware(), handler.DeleteUserHandler)
 	}
 
 	router.Run(":" + viper.GetString("server.port"))
