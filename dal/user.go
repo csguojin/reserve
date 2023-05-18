@@ -10,7 +10,7 @@ import (
 
 func GetAllUsers(db *gorm.DB) ([]*model.User, error) {
 	var users []*model.User
-	err := db.Find(&users).Error
+	err := db.Select("id", "username", "email").Find(&users).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -29,7 +29,7 @@ func CeateUser(db *gorm.DB, user *model.User) (*model.User, error) {
 
 func GetUser(db *gorm.DB, id int) (*model.User, error) {
 	user := &model.User{ID: id}
-	err := db.First(&user, id).Error
+	err := db.Select("id", "username", "email").First(&user, id).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, util.ErrUserNotFound
@@ -38,6 +38,16 @@ func GetUser(db *gorm.DB, id int) (*model.User, error) {
 }
 
 func GetUserByName(db *gorm.DB, username string) (*model.User, error) {
+	user := &model.User{}
+	err := db.Select("id", "username", "email").Where(&model.User{Username: username}).First(user).Error
+	if err != nil {
+		logger.L.Errorln(err)
+		return nil, util.ErrUserNotFound
+	}
+	return user, nil
+}
+
+func GetUserWithPasswordByName(db *gorm.DB, username string) (*model.User, error) {
 	user := &model.User{}
 	err := db.Where(&model.User{Username: username}).First(user).Error
 	if err != nil {

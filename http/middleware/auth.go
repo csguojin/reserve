@@ -25,16 +25,24 @@ func AuthUserMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		useridStr, ok := claims["userid"].(string)
+		userIDStr, ok := claims["userid"].(string)
 		if !ok {
 			logger.L.Errorln("missing use id in token")
 			c.Status(http.StatusUnauthorized)
 			c.Abort()
 			return
 		}
-		userid, err := strconv.Atoi(useridStr)
+		userid, err := strconv.Atoi(userIDStr)
 		if err != nil {
 			logger.L.Errorln(err)
+			c.Status(http.StatusUnauthorized)
+			c.Abort()
+			return
+		}
+
+		userIDStrPath := c.Param("user_id")
+		if userIDStrPath != userIDStr {
+			logger.L.Errorln("user id in token not equal in path")
 			c.Status(http.StatusUnauthorized)
 			c.Abort()
 			return
@@ -64,14 +72,14 @@ func AuthAdminMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		useridStr, ok := claims["adminid"].(string)
+		userIDStr, ok := claims["adminid"].(string)
 		if !ok {
 			logger.L.Errorln("missing admin id in token")
 			c.Status(http.StatusUnauthorized)
 			c.Abort()
 			return
 		}
-		userid, err := strconv.Atoi(useridStr)
+		userid, err := strconv.Atoi(userIDStr)
 		if err != nil {
 			logger.L.Errorln(err)
 			c.Status(http.StatusUnauthorized)

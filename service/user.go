@@ -25,7 +25,7 @@ func CreateUser(user *model.User) (*model.User, error) {
 }
 
 func CheckUser(username string, password string) (*model.User, error) {
-	user, err := dal.GetUserByName(dal.GetDB(), username)
+	user, err := dal.GetUserWithPasswordByName(dal.GetDB(), username)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -63,7 +63,7 @@ func GetAllUsers() ([]*model.User, error) {
 	return users, nil
 }
 
-func GetUserNoPassword(userID int) (*model.User, error) {
+func GetUser(userID int) (*model.User, error) {
 	user, err := dal.GetUser(dal.GetDB(), userID)
 	user.Password = ""
 	if err != nil {

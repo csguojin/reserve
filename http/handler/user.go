@@ -121,7 +121,7 @@ func GetUserHandler(c *gin.Context) {
 		return
 	}
 
-	user, err := service.GetUserNoPassword(userID)
+	user, err := service.GetUser(userID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, nil)

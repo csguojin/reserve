@@ -25,7 +25,7 @@ func CreateAdmin(admin *model.Admin) (*model.Admin, error) {
 }
 
 func CheckAdmin(adminname string, password string) (*model.Admin, error) {
-	admin, err := dal.GetAdminByName(dal.GetDB(), adminname)
+	admin, err := dal.GetAdminWithPasswordByName(dal.GetDB(), adminname)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err

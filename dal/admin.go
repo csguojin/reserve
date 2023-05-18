@@ -10,7 +10,7 @@ import (
 
 func GetAllAdmins(db *gorm.DB) ([]*model.Admin, error) {
 	var admins []*model.Admin
-	err := db.Find(&admins).Error
+	err := db.Select("id", "name", "email").Find(&admins).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -29,7 +29,7 @@ func CeateAdmin(db *gorm.DB, admin *model.Admin) (*model.Admin, error) {
 
 func GetAdmin(db *gorm.DB, id int) (*model.Admin, error) {
 	admin := &model.Admin{ID: id}
-	err := db.First(&admin, id).Error
+	err := db.Select("id", "name", "email").First(&admin, id).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, util.ErrUserNotFound
@@ -38,6 +38,16 @@ func GetAdmin(db *gorm.DB, id int) (*model.Admin, error) {
 }
 
 func GetAdminByName(db *gorm.DB, name string) (*model.Admin, error) {
+	admin := &model.Admin{}
+	err := db.Select("id", "name", "email").Where(&model.Admin{Name: name}).First(admin).Error
+	if err != nil {
+		logger.L.Errorln(err)
+		return nil, util.ErrUserNotFound
+	}
+	return admin, nil
+}
+
+func GetAdminWithPasswordByName(db *gorm.DB, name string) (*model.Admin, error) {
 	admin := &model.Admin{}
 	err := db.Where(&model.Admin{Name: name}).First(admin).Error
 	if err != nil {
