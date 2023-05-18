@@ -1,6 +1,7 @@
 package service
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -39,9 +40,10 @@ func CheckAdmin(adminname string, password string) (*model.Admin, error) {
 
 func GenerateAdminToken(admin *model.Admin) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"adminid":   admin.ID,
+		"exp": time.Now().Add(time.Hour).Unix(),
+
+		"adminid":   strconv.Itoa(admin.ID),
 		"adminname": admin.Name,
-		"exp":       time.Now().Add(time.Hour).Unix(),
 	})
 	tokenStr, err := token.SignedString([]byte(viper.GetString("jwt.adminkey")))
 	if err != nil {

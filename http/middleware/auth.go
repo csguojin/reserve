@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -25,9 +25,16 @@ func AuthUserMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		userid, ok := claims["useid"].(int)
+		useridStr, ok := claims["userid"].(string)
 		if !ok {
-			logger.L.Errorln("missing user id in token")
+			logger.L.Errorln("missing use id in token")
+			c.Status(http.StatusUnauthorized)
+			c.Abort()
+			return
+		}
+		userid, err := strconv.Atoi(useridStr)
+		if err != nil {
+			logger.L.Errorln(err)
 			c.Status(http.StatusUnauthorized)
 			c.Abort()
 			return
@@ -57,9 +64,16 @@ func AuthAdminMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		userid, ok := claims["adminid"].(int)
+		useridStr, ok := claims["adminid"].(string)
 		if !ok {
 			logger.L.Errorln("missing admin id in token")
+			c.Status(http.StatusUnauthorized)
+			c.Abort()
+			return
+		}
+		userid, err := strconv.Atoi(useridStr)
+		if err != nil {
+			logger.L.Errorln(err)
 			c.Status(http.StatusUnauthorized)
 			c.Abort()
 			return
@@ -93,20 +107,13 @@ func checkAuth(c *gin.Context, key string) (jwt.MapClaims, error) {
 		return []byte(key), nil
 	})
 	if err != nil {
+		logger.L.Errorln(err)
 		return nil, util.ErrTokenInvalid
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || !token.Valid {
 		return nil, util.ErrTokenInvalid
-	}
-
-	expTime, ok := claims["exp"].(time.Time)
-	if !ok {
-		return nil, errors.New("missing expired time in token")
-	}
-	if expTime.Before(time.Now()) {
-		return nil, errors.New("token is expired")
 	}
 
 	return claims, nil

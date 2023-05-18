@@ -1,6 +1,7 @@
 package service
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -39,9 +40,10 @@ func CheckUser(username string, password string) (*model.User, error) {
 
 func GenerateToken(user *model.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"userid":   user.ID,
+		"exp": time.Now().Add(time.Hour).Unix(),
+
+		"userid":   strconv.Itoa(user.ID),
 		"username": user.Username,
-		"exp":      time.Now().Add(time.Hour).Unix(),
 	})
 	tokenStr, err := token.SignedString([]byte(viper.GetString("jwt.userkey")))
 	if err != nil {

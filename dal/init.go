@@ -50,6 +50,11 @@ func createDB() {
 		panic(err)
 	}
 
+	err = db.AutoMigrate(&model.Admin{})
+	if err != nil {
+		panic(err)
+	}
+
 	DB = db
 }
 
