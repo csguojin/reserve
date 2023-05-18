@@ -18,6 +18,15 @@ func GetAllRooms(db *gorm.DB) ([]*model.Room, error) {
 	return rooms, nil
 }
 
+func CreateRoom(db *gorm.DB, room *model.Room) (*model.Room, error) {
+	err := db.Create(room).Error
+	if err != nil {
+		logger.L.Errorln(err)
+		return nil, err
+	}
+	return GetRoom(db, room.ID)
+}
+
 func GetRoom(db *gorm.DB, id int) (*model.Room, error) {
 	room := &model.Room{ID: id}
 	err := db.First(&room, id).Error
@@ -26,4 +35,22 @@ func GetRoom(db *gorm.DB, id int) (*model.Room, error) {
 		return nil, util.ErrRoomNotFound
 	}
 	return room, nil
+}
+
+func UpdateRoom(db *gorm.DB, room *model.Room) (*model.Room, error) {
+	err := db.Model(&model.Room{}).Where("id = ?", room.ID).Updates(&room).Error
+	if err != nil {
+		logger.L.Errorln(err)
+		return nil, err
+	}
+	return GetRoom(db, room.ID)
+}
+
+func DeleteRoom(db *gorm.DB, roomID int) error {
+	err := db.Delete(&model.Room{}, roomID).Error
+	if err != nil {
+		logger.L.Errorln(err)
+		return err
+	}
+	return nil
 }

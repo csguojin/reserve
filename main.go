@@ -30,5 +30,14 @@ func main() {
 		v1.POST("/users/:user_id/reservations/:resv_id/cancel", handler.CancelResvHandler)
 	}
 
+	admin := v1.Group("admin")
+	{
+		admin.GET("/rooms", handler.GetAllRoomsHandler)
+		admin.POST("/rooms", handler.CreateRoomHandler)
+		admin.GET("/rooms/:room_id", handler.GetRoomHandler)
+		admin.PUT("/rooms/:room_id", handler.UpdateRoomHandler)
+		admin.DELETE("/rooms/:room_id", handler.DeleteRoomHandler)
+	}
+
 	router.Run(":" + viper.GetString("server.port"))
 }
