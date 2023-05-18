@@ -15,12 +15,12 @@ import (
 )
 
 func CreateAdmin(admin *model.Admin) (*model.Admin, error) {
-	passwordData, err := bcrypt.GenerateFromPassword([]byte(admin.Password), bcrypt.DefaultCost)
+	encryedPwd, err := encryptPassword(admin.Password)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
 	}
-	admin.Password = string(passwordData)
+	admin.Password = encryedPwd
 	return dal.CeateAdmin(dal.GetDB(), admin)
 }
 

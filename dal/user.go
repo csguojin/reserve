@@ -57,6 +57,15 @@ func GetUserWithPasswordByName(db *gorm.DB, username string) (*model.User, error
 	return user, nil
 }
 
+func UpdateUser(db *gorm.DB, user *model.User) (*model.User, error) {
+	err := db.Model(&model.User{}).Where("id = ?", user.ID).Updates(&user).Error
+	if err != nil {
+		logger.L.Errorln(err)
+		return nil, err
+	}
+	return GetUser(db, user.ID)
+}
+
 func DeleteUser(db *gorm.DB, userID int) error {
 	err := db.Delete(&model.User{}, userID).Error
 	if err != nil {

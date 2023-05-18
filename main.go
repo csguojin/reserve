@@ -29,6 +29,8 @@ func main() {
 		v1.POST("/users/:user_id/reservations/:resv_id/signin", middleware.AuthUserMiddleware(), handler.SigninHandler)
 		v1.POST("/users/:user_id/reservations/:resv_id/signout", middleware.AuthUserMiddleware(), handler.SignoutHandler)
 		v1.POST("/users/:user_id/reservations/:resv_id/cancel", middleware.AuthUserMiddleware(), handler.CancelResvHandler)
+
+		v1.PUT("/users/:user_id", middleware.AuthUserMiddleware(), handler.UpdateUserHandler)
 	}
 
 	admin := v1.Group("admin")
@@ -53,6 +55,7 @@ func main() {
 
 		admin.GET("/users", middleware.AuthAdminMiddleware(), handler.GetAllUsersHandler)
 		admin.GET("/users/:user_id", middleware.AuthAdminMiddleware(), handler.GetUserHandler)
+		admin.PUT("/users/:user_id", middleware.AuthAdminMiddleware(), handler.UpdateUserHandler)
 		admin.DELETE("/users/:user_id", middleware.AuthAdminMiddleware(), handler.DeleteUserHandler)
 	}
 

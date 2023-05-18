@@ -15,12 +15,12 @@ import (
 )
 
 func CreateUser(user *model.User) (*model.User, error) {
-	passwordData, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	encryedPwd, err := encryptPassword(user.Password)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
 	}
-	user.Password = string(passwordData)
+	user.Password = encryedPwd
 	return dal.CeateUser(dal.GetDB(), user)
 }
 
@@ -73,6 +73,23 @@ func GetUser(userID int) (*model.User, error) {
 	return user, nil
 }
 
+func UpdateUser(user *model.User) (*model.User, error) {
+	if user.Password != "" {
+		encryedPwd, err := encryptPassword(user.Password)
+		if err != nil {
+			logger.L.Errorln(err)
+			return nil, err
+		}
+		user.Password = encryedPwd
+	}
+	user, err := dal.UpdateUser(dal.GetDB(), user)
+	if err != nil {
+		logger.L.Errorln(err)
+		return nil, err
+	}
+	return user, nil
+}
+
 func DeleteUser(userID int) error {
 	err := dal.DeleteUser(dal.GetDB(), userID)
 	if err != nil {
@@ -80,6 +97,15 @@ func DeleteUser(userID int) error {
 		return err
 	}
 	return nil
+}
+
+func encryptPassword(password string) (string, error) {
+	passwordData, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		logger.L.Errorln(err)
+		return "", err
+	}
+	return string(passwordData), nil
 }
 
 func verifyPassword(password, hashedPassword string) error {
