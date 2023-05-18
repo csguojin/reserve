@@ -37,6 +37,12 @@ func main() {
 		admin.GET("/rooms/:room_id", handler.GetRoomHandler)
 		admin.PUT("/rooms/:room_id", handler.UpdateRoomHandler)
 		admin.DELETE("/rooms/:room_id", handler.DeleteRoomHandler)
+
+		admin.GET("/rooms/:room_id/seats", handler.GetAllSeatsHandler)
+		admin.POST("/rooms/:room_id/seats", handler.CreateSeatHandler)
+		admin.GET("/rooms/:room_id/seats/:seat_id", handler.GetSeatHandler)
+		admin.PUT("/rooms/:room_id/seats/:seat_id", handler.UpdateSeatHandler)
+		admin.DELETE("/rooms/:room_id/seats/:seat_id", handler.DeleteSeatHandler)
 	}
 
 	router.Run(":" + viper.GetString("server.port"))

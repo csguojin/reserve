@@ -31,6 +31,7 @@ func CreateRoomHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	room.ID = 0
 	room, err = service.CreateRoom(room)
 	if err != nil {
 		logger.L.Errorln(err)
@@ -94,7 +95,6 @@ func UpdateRoomHandler(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, room)
-
 }
 
 func DeleteRoomHandler(c *gin.Context) {
