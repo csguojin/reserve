@@ -4,6 +4,7 @@ import "errors"
 
 var (
 	ErrRequestBodyFormat = errors.New("body is missing or illegal")
+	ErrTokenInvalid      = errors.New("invalid token")
 )
 
 var (
