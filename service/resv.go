@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"time"
 
 	"github.com/csguojin/reserve/dal"
@@ -26,8 +27,8 @@ func GetResv(resvID int) (*model.Resv, error) {
 	return resv, nil
 }
 
-func UpdateResv(resv *model.Resv) (*model.Resv, error) {
-	resv, err := dal.UpdateResv(dal.GetDB(), resv)
+func UpdateResvStatus(resv *model.Resv) (*model.Resv, error) {
+	resv, err := dal.UpdateResvStatus(dal.GetDB(), resv)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -59,10 +60,35 @@ func Signin(resvID int, userID int) (*model.Resv, error) {
 		logger.L.Errorln(err)
 		return nil, err
 	}
+
+	if resv.SigninTime != nil {
+		err := errors.New("repeat signin error")
+		logger.L.Errorln(err)
+		return nil, err
+	}
+
+	if resv.Status != 0 {
+		err := errors.New("reservation status error")
+		logger.L.Errorln(err)
+		return nil, err
+	}
+
 	now := time.Now()
+	if now.Add(15 * time.Minute).Before(*resv.StartTime) {
+		err := errors.New("sign in too early")
+		logger.L.Errorln(err)
+		return nil, err
+	}
+
+	if now.After((*resv.EndTime).Add(15 * time.Minute)) {
+		err := errors.New("sign in too late")
+		logger.L.Errorln(err)
+		return nil, err
+	}
+
 	resv.SigninTime = &now
 
-	resv, err = UpdateResv(resv)
+	resv, err = UpdateResvStatus(resv)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -76,15 +102,34 @@ func Signout(resvID int, userID int) (*model.Resv, error) {
 		logger.L.Errorln(err)
 		return nil, err
 	}
+
+	if resv.SignoutTime != nil {
+		err := errors.New("repeat signout error")
+		logger.L.Errorln(err)
+		return nil, err
+	}
+
+	if resv.Status != 0 {
+		err := errors.New("reservation status error")
+		logger.L.Errorln(err)
+		return nil, err
+	}
+
 	now := time.Now()
 	resv.SignoutTime = &now
-	resv.Status = 1
 
-	resv, err = UpdateResv(resv)
+	resv, err = UpdateResvStatus(resv)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
 	}
+
+	if now.After((*resv.EndTime)) {
+		err := errors.New("the time is up, it ends automatically")
+		logger.L.Errorln(err)
+		return resv, err
+	}
+
 	return resv, nil
 }
 
@@ -95,9 +140,15 @@ func CancelResv(resvID int, userID int) (*model.Resv, error) {
 		return nil, err
 	}
 
-	resv.Status = 2
+	if resv.Status != 0 {
+		err := errors.New("reservation status error")
+		logger.L.Errorln(err)
+		return nil, err
+	}
 
-	resv, err = UpdateResv(resv)
+	resv.Status = 1
+
+	resv, err = UpdateResvStatus(resv)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err

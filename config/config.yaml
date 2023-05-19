@@ -19,4 +19,5 @@ log:
   # file: app.log
 
 jwt:
-  key: secret
+  userkey: secret1
+  adminkey: secret2

@@ -5,7 +5,6 @@ type Seat struct {
 	RoomID      int    `json:"room_id" gorm:"index; not null"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	URL         string `json:"URL"`
 	Status      int    `json:"status"`
 }
 
