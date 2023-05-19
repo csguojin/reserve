@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/csguojin/reserve/model"
+	"github.com/csguojin/reserve/util"
 	"github.com/csguojin/reserve/util/logger"
 )
 
@@ -65,9 +66,8 @@ func CreateResv(db *gorm.DB, resv *model.Resv) (*model.Resv, error) {
 
 	if existingResvCount > 0 {
 		tx.Rollback()
-		err := errors.New("seat reservation time conflict")
-		logger.L.Errorln(err)
-		return nil, err
+		logger.L.Errorln(util.ErrResvSeatTimeConflict)
+		return nil, util.ErrResvSeatTimeConflict
 	}
 
 	existingResvCount = 0
@@ -84,9 +84,8 @@ func CreateResv(db *gorm.DB, resv *model.Resv) (*model.Resv, error) {
 
 	if existingResvCount > 0 {
 		tx.Rollback()
-		err := errors.New("user reservation time conflict")
-		logger.L.Errorln(err)
-		return nil, err
+		logger.L.Errorln(util.ErrResvUserTimeConflict)
+		return nil, util.ErrResvUserTimeConflict
 	}
 
 	now := time.Now()
@@ -196,9 +195,8 @@ func updateResvTime(db *gorm.DB, newResv *model.Resv) (*model.Resv, error) {
 
 	if existingResvCount > 0 {
 		tx.Rollback()
-		err := errors.New("seat reservation time conflict")
-		logger.L.Errorln(err)
-		return nil, err
+		logger.L.Errorln(util.ErrResvSeatTimeConflict)
+		return nil, util.ErrResvSeatTimeConflict
 	}
 
 	existingResvCount = 0
@@ -216,9 +214,8 @@ func updateResvTime(db *gorm.DB, newResv *model.Resv) (*model.Resv, error) {
 
 	if existingResvCount > 0 {
 		tx.Rollback()
-		err := errors.New("user reservation time conflict")
-		logger.L.Errorln(err)
-		return nil, err
+		logger.L.Errorln(util.ErrResvUserTimeConflict)
+		return nil, util.ErrResvUserTimeConflict
 	}
 
 	err = db.Model(&model.Resv{}).Where("id = ?", newResv.ID).Updates(

@@ -6,6 +6,7 @@ import (
 
 	"github.com/csguojin/reserve/dal"
 	"github.com/csguojin/reserve/model"
+	"github.com/csguojin/reserve/util"
 	"github.com/csguojin/reserve/util/logger"
 )
 
@@ -68,9 +69,8 @@ func Signin(resvID int, userID int) (*model.Resv, error) {
 	}
 
 	if resv.Status != 0 {
-		err := errors.New("reservation status error")
-		logger.L.Errorln(err)
-		return nil, err
+		logger.L.Errorln(util.ErrResvCanceled)
+		return nil, util.ErrResvCanceled
 	}
 
 	now := time.Now()
@@ -110,9 +110,8 @@ func Signout(resvID int, userID int) (*model.Resv, error) {
 	}
 
 	if resv.Status != 0 {
-		err := errors.New("reservation status error")
-		logger.L.Errorln(err)
-		return nil, err
+		logger.L.Errorln(util.ErrResvCanceled)
+		return nil, util.ErrResvCanceled
 	}
 
 	now := time.Now()
@@ -141,9 +140,8 @@ func CancelResv(resvID int, userID int) (*model.Resv, error) {
 	}
 
 	if resv.Status != 0 {
-		err := errors.New("reservation status error")
-		logger.L.Errorln(err)
-		return nil, err
+		logger.L.Errorln(util.ErrResvCanceled)
+		return nil, util.ErrResvCanceled
 	}
 
 	resv.Status = 1

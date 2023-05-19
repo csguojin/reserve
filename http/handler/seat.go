@@ -14,11 +14,10 @@ import (
 func GetAllSeatsHandler(c *gin.Context) {
 	roomIDStr := c.Param("room_id")
 	if roomIDStr == "" {
-		logger.L.Errorln("room id is nil")
-		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrRoomNotFound})
+		logger.L.Errorln(util.ErrRoomIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrRoomIDNil.Error()})
 		return
 	}
-
 	roomID, err := strconv.Atoi(roomIDStr)
 	if err != nil {
 		logger.L.Errorln(err)
@@ -44,11 +43,10 @@ func GetAllSeatsHandler(c *gin.Context) {
 func CreateSeatHandler(c *gin.Context) {
 	roomIDStr := c.Param("room_id")
 	if roomIDStr == "" {
-		logger.L.Errorln("room id is nil")
-		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrRoomNotFound})
+		logger.L.Errorln(util.ErrRoomIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrRoomIDNil.Error()})
 		return
 	}
-
 	roomID, err := strconv.Atoi(roomIDStr)
 	if err != nil {
 		logger.L.Errorln(err)
@@ -77,11 +75,10 @@ func CreateSeatHandler(c *gin.Context) {
 func GetSeatHandler(c *gin.Context) {
 	seatIDStr := c.Param("seat_id")
 	if seatIDStr == "" {
-		logger.L.Errorln("seat id is nil")
-		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrSeatNotFound})
+		logger.L.Errorln(util.ErrSeatIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrSeatIDNil.Error()})
 		return
 	}
-
 	seatID, err := strconv.Atoi(seatIDStr)
 	if err != nil {
 		logger.L.Errorln(err)
@@ -101,11 +98,10 @@ func GetSeatHandler(c *gin.Context) {
 func UpdateSeatHandler(c *gin.Context) {
 	seatIDStr := c.Param("seat_id")
 	if seatIDStr == "" {
-		logger.L.Errorln("seat id is nil")
-		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrSeatNotFound})
+		logger.L.Errorln(util.ErrSeatIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrSeatIDNil.Error()})
 		return
 	}
-
 	seatID, err := strconv.Atoi(seatIDStr)
 	if err != nil {
 		logger.L.Errorln(err)
@@ -133,11 +129,10 @@ func UpdateSeatHandler(c *gin.Context) {
 func DeleteSeatHandler(c *gin.Context) {
 	seatIDStr := c.Param("seat_id")
 	if seatIDStr == "" {
-		logger.L.Errorln("seat id is nil")
-		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrSeatNotFound})
+		logger.L.Errorln(util.ErrSeatIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrSeatIDNil.Error()})
 		return
 	}
-
 	seatID, err := strconv.Atoi(seatIDStr)
 	if err != nil {
 		logger.L.Errorln(err)

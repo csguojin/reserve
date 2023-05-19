@@ -109,11 +109,10 @@ func GetAllAdminsHandler(c *gin.Context) {
 func GetAdminHandler(c *gin.Context) {
 	adminIDStr := c.Param("admin_id")
 	if adminIDStr == "" {
-		logger.L.Errorln("admin id is nil")
-		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserNotFound})
+		logger.L.Errorln(util.ErrAdminIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrAdminIDNil.Error()})
 		return
 	}
-
 	adminID, err := strconv.Atoi(adminIDStr)
 	if err != nil {
 		logger.L.Errorln(err)
@@ -140,11 +139,10 @@ func GetAdminHandler(c *gin.Context) {
 func DeleteAdminHandler(c *gin.Context) {
 	adminIDStr := c.Param("admin_id")
 	if adminIDStr == "" {
-		logger.L.Errorln("admin id is nil")
-		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserNotFound})
+		logger.L.Errorln(util.ErrAdminIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrAdminIDNil.Error()})
 		return
 	}
-
 	adminID, err := strconv.Atoi(adminIDStr)
 	if err != nil {
 		logger.L.Errorln(err)

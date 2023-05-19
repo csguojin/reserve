@@ -109,11 +109,10 @@ func GetAllUsersHandler(c *gin.Context) {
 func GetUserHandler(c *gin.Context) {
 	userIDStr := c.Param("user_id")
 	if userIDStr == "" {
-		logger.L.Errorln("user id is nil")
-		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserNotFound})
+		logger.L.Errorln(util.ErrUserIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
 		return
 	}
-
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		logger.L.Errorln(err)
@@ -140,11 +139,10 @@ func GetUserHandler(c *gin.Context) {
 func UpdateUserHandler(c *gin.Context) {
 	userIDStr := c.Param("user_id")
 	if userIDStr == "" {
-		logger.L.Errorln("user id is nil")
-		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserNotFound})
+		logger.L.Errorln(util.ErrUserIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
 		return
 	}
-
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		logger.L.Errorln(err)
@@ -180,11 +178,10 @@ func UpdateUserHandler(c *gin.Context) {
 func DeleteUserHandler(c *gin.Context) {
 	userIDStr := c.Param("user_id")
 	if userIDStr == "" {
-		logger.L.Errorln("user id is nil")
-		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserNotFound})
+		logger.L.Errorln(util.ErrUserIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
 		return
 	}
-
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		logger.L.Errorln(err)

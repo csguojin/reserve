@@ -44,11 +44,10 @@ func CreateRoomHandler(c *gin.Context) {
 func GetRoomHandler(c *gin.Context) {
 	roomIDStr := c.Param("room_id")
 	if roomIDStr == "" {
-		logger.L.Errorln("room id is nil")
-		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrRoomNotFound})
+		logger.L.Errorln(util.ErrRoomIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrRoomIDNil.Error()})
 		return
 	}
-
 	roomID, err := strconv.Atoi(roomIDStr)
 	if err != nil {
 		logger.L.Errorln(err)
@@ -68,11 +67,10 @@ func GetRoomHandler(c *gin.Context) {
 func UpdateRoomHandler(c *gin.Context) {
 	roomIDStr := c.Param("room_id")
 	if roomIDStr == "" {
-		logger.L.Errorln("room id is nil")
-		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrRoomNotFound})
+		logger.L.Errorln(util.ErrRoomIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrRoomIDNil.Error()})
 		return
 	}
-
 	roomID, err := strconv.Atoi(roomIDStr)
 	if err != nil {
 		logger.L.Errorln(err)
@@ -100,11 +98,10 @@ func UpdateRoomHandler(c *gin.Context) {
 func DeleteRoomHandler(c *gin.Context) {
 	roomIDStr := c.Param("room_id")
 	if roomIDStr == "" {
-		logger.L.Errorln("room id is nil")
-		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrRoomNotFound})
+		logger.L.Errorln(util.ErrRoomIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrRoomIDNil.Error()})
 		return
 	}
-
 	roomID, err := strconv.Atoi(roomIDStr)
 	if err != nil {
 		logger.L.Errorln(err)

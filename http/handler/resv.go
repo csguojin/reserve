@@ -20,7 +20,6 @@ func GetResvsByUserHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
 		return
 	}
-
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		logger.L.Errorln(err)
@@ -45,7 +44,6 @@ func CreateResvHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
 		return
 	}
-
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		logger.L.Errorln(err)
@@ -65,8 +63,8 @@ func CreateResvHandler(c *gin.Context) {
 		resv.EndTime == nil ||
 		!resv.EndTime.After(*resv.StartTime) ||
 		resv.EndTime.Sub(*resv.StartTime) >= time.Hour*24 {
-		logger.L.Errorln(util.ErrRequestBodyFormat)
-		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrRequestBodyFormat.Error()})
+		logger.L.Errorln(util.ErrResvTimeIllegal)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrResvTimeIllegal.Error()})
 		return
 	}
 
@@ -90,7 +88,6 @@ func SigninHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
 		return
 	}
-
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		logger.L.Errorln(err)
@@ -100,11 +97,10 @@ func SigninHandler(c *gin.Context) {
 
 	resvIDStr := c.Param("resv_id")
 	if resvIDStr == "" {
-		logger.L.Errorln(util.ErrUserIDNil)
-		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
+		logger.L.Errorln(util.ErrResvIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrResvIDNil.Error()})
 		return
 	}
-
 	resvID, err := strconv.Atoi(resvIDStr)
 	if err != nil {
 		logger.L.Errorln(err)
@@ -129,7 +125,6 @@ func SignoutHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
 		return
 	}
-
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		logger.L.Errorln(err)
@@ -139,11 +134,10 @@ func SignoutHandler(c *gin.Context) {
 
 	resvIDStr := c.Param("resv_id")
 	if resvIDStr == "" {
-		logger.L.Errorln(util.ErrUserIDNil)
-		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
+		logger.L.Errorln(util.ErrResvIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrResvIDNil.Error()})
 		return
 	}
-
 	resvID, err := strconv.Atoi(resvIDStr)
 	if err != nil {
 		logger.L.Errorln(err)
@@ -162,14 +156,12 @@ func SignoutHandler(c *gin.Context) {
 }
 
 func CancelResvHandler(c *gin.Context) {
-
 	userIDStr := c.Param("user_id")
 	if userIDStr == "" {
 		logger.L.Errorln(util.ErrUserIDNil)
 		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
 		return
 	}
-
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		logger.L.Errorln(err)
@@ -179,11 +171,10 @@ func CancelResvHandler(c *gin.Context) {
 
 	resvIDStr := c.Param("resv_id")
 	if resvIDStr == "" {
-		logger.L.Errorln(util.ErrUserIDNil)
-		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
+		logger.L.Errorln(util.ErrResvIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrResvIDNil.Error()})
 		return
 	}
-
 	resvID, err := strconv.Atoi(resvIDStr)
 	if err != nil {
 		logger.L.Errorln(err)

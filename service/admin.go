@@ -33,7 +33,7 @@ func CheckAdmin(adminname string, password string) (*model.Admin, error) {
 	err = verifyAdminPassword(password, admin.Password)
 	if err != nil {
 		logger.L.Errorln(err)
-		return nil, util.ErrUserAuthFail
+		return nil, util.ErrAdminAuthFail
 	}
 	return admin, nil
 }
