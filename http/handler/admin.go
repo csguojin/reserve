@@ -86,7 +86,7 @@ func (h *HandlerStruct) AdminLoginHandler(c *gin.Context) {
 }
 
 func (h *HandlerStruct) GetAllAdminsHandler(c *gin.Context) {
-	admins, err := h.svc.GetAllAdmins()
+	admins, err := h.svc.GetAllAdmins(parsePager(c))
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, nil)

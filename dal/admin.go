@@ -6,9 +6,10 @@ import (
 	"github.com/csguojin/reserve/util/logger"
 )
 
-func (d *dal) GetAllAdmins() ([]*model.Admin, error) {
+func (d *dal) GetAllAdmins(pager *model.Pager) ([]*model.Admin, error) {
 	var admins []*model.Admin
-	err := d.db.Select("id", "name", "email").Find(&admins).Error
+	offset := (pager.Page - 1) * pager.PerPage
+	err := d.db.Offset(offset).Limit(pager.PerPage).Select("id", "name", "email").Find(&admins).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err

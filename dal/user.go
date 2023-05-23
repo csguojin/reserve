@@ -6,9 +6,10 @@ import (
 	"github.com/csguojin/reserve/util/logger"
 )
 
-func (d *dal) GetAllUsers() ([]*model.User, error) {
+func (d *dal) GetAllUsers(pager *model.Pager) ([]*model.User, error) {
 	var users []*model.User
-	err := d.db.Select("id", "username", "email").Find(&users).Error
+	offset := (pager.Page - 1) * pager.PerPage
+	err := d.db.Offset(offset).Limit(pager.PerPage).Select("id", "username", "email").Find(&users).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err

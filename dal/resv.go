@@ -236,9 +236,10 @@ func (d *dal) updateResvTime(newResv *model.Resv) (*model.Resv, error) {
 	return d.GetResv(newResv.ID)
 }
 
-func (d *dal) GetResvsByUser(userID int) ([]*model.Resv, error) {
+func (d *dal) GetResvsByUser(userID int, pager *model.Pager) ([]*model.Resv, error) {
 	var resvs []*model.Resv
-	err := d.db.Where(&model.Resv{UserID: userID}).Find(&resvs).Error
+	offset := (pager.Page - 1) * pager.PerPage
+	err := d.db.Offset(offset).Limit(pager.PerPage).Where(&model.Resv{UserID: userID}).Find(&resvs).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -246,9 +247,10 @@ func (d *dal) GetResvsByUser(userID int) ([]*model.Resv, error) {
 	return resvs, nil
 }
 
-func (d *dal) GetResvsBySeat(seatID int) ([]*model.Resv, error) {
+func (d *dal) GetResvsBySeat(seatID int, pager *model.Pager) ([]*model.Resv, error) {
 	var resvs []*model.Resv
-	err := d.db.Where(&model.Resv{SeatID: seatID}).Find(&resvs).Error
+	offset := (pager.Page - 1) * pager.PerPage
+	err := d.db.Offset(offset).Limit(pager.PerPage).Where(&model.Resv{SeatID: seatID}).Find(&resvs).Offset(offset).Limit(pager.PerPage).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err

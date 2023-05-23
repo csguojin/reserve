@@ -6,9 +6,10 @@ import (
 	"github.com/csguojin/reserve/util/logger"
 )
 
-func (d *dal) GetAllRooms() ([]*model.Room, error) {
+func (d *dal) GetAllRooms(pager *model.Pager) ([]*model.Room, error) {
 	var rooms []*model.Room
-	err := d.db.Find(&rooms).Error
+	offset := (pager.Page - 1) * pager.PerPage
+	err := d.db.Offset(offset).Limit(pager.PerPage).Find(&rooms).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err

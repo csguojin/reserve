@@ -24,7 +24,7 @@ func (h *HandlerStruct) GetAllSeatsHandler(c *gin.Context) {
 		return
 	}
 
-	seats, err := h.svc.GetAllSeats(roomID)
+	seats, err := h.svc.GetAllSeats(roomID, parsePager(c))
 	if err != nil {
 		logger.L.Errorln(err)
 		switch err {

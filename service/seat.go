@@ -5,8 +5,8 @@ import (
 	"github.com/csguojin/reserve/util/logger"
 )
 
-func (s *svc) GetAllSeats(roomID int) ([]*model.Seat, error) {
-	seats, err := s.dal.GetAllSeats(roomID)
+func (s *svc) GetAllSeats(roomID int, pager *model.Pager) ([]*model.Seat, error) {
+	seats, err := s.dal.GetAllSeats(roomID, pager)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err

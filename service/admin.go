@@ -58,8 +58,8 @@ func (s *svc) GenerateAdminToken(admin *model.Admin) (string, error) {
 	return tokenStr, nil
 }
 
-func (s *svc) GetAllAdmins() ([]*model.Admin, error) {
-	admins, err := s.dal.GetAllAdmins()
+func (s *svc) GetAllAdmins(pager *model.Pager) ([]*model.Admin, error) {
+	admins, err := s.dal.GetAllAdmins(pager)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err

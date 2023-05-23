@@ -26,7 +26,7 @@ func (h *HandlerStruct) GetResvsByUserHandler(c *gin.Context) {
 		return
 	}
 
-	resvs, err := h.svc.GetResvsByUser(userID)
+	resvs, err := h.svc.GetResvsByUser(userID, parsePager(c))
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

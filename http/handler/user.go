@@ -86,7 +86,7 @@ func (h *HandlerStruct) LoginHandler(c *gin.Context) {
 }
 
 func (h *HandlerStruct) GetAllUsersHandler(c *gin.Context) {
-	users, err := h.svc.GetAllUsers()
+	users, err := h.svc.GetAllUsers(parsePager(c))
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, nil)

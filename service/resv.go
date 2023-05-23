@@ -36,8 +36,8 @@ func (s *svc) UpdateResvStatus(resv *model.Resv) (*model.Resv, error) {
 	return resv, nil
 }
 
-func (s *svc) GetResvsByUser(userID int) ([]*model.Resv, error) {
-	resv, err := s.dal.GetResvsByUser(userID)
+func (s *svc) GetResvsByUser(userID int, pager *model.Pager) ([]*model.Resv, error) {
+	resv, err := s.dal.GetResvsByUser(userID, pager)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -45,8 +45,8 @@ func (s *svc) GetResvsByUser(userID int) ([]*model.Resv, error) {
 	return resv, nil
 }
 
-func (s *svc) GetResvsBySeat(seatID int) ([]*model.Resv, error) {
-	resv, err := s.dal.GetResvsBySeat(seatID)
+func (s *svc) GetResvsBySeat(seatID int, pager *model.Pager) ([]*model.Resv, error) {
+	resv, err := s.dal.GetResvsBySeat(seatID, pager)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err

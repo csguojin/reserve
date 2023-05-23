@@ -48,9 +48,9 @@ func TestHandlerStruct_GetAllRoomsHandler(t *testing.T) {
 		},
 	}
 
-	mockDAL.EXPECT().GetAllRooms().Return(expectedRooms, nil).Times(1)
+	mockDAL.EXPECT().GetAllRooms(&model.Pager{Page: 1, PerPage: 3}).Return(expectedRooms, nil).Times(1)
 
-	req, err := http.NewRequest("GET", "/rooms", nil)
+	req, err := http.NewRequest("GET", "/rooms?page=1&per_page=3", nil)
 	assert.NoError(t, err)
 
 	recorder := httptest.NewRecorder()

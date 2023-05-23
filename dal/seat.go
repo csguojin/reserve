@@ -6,9 +6,10 @@ import (
 	"github.com/csguojin/reserve/util/logger"
 )
 
-func (d *dal) GetAllSeats(roomID int) ([]*model.Seat, error) {
+func (d *dal) GetAllSeats(roomID int, pager *model.Pager) ([]*model.Seat, error) {
 	var seats []*model.Seat
-	err := d.db.Where(&model.Seat{RoomID: roomID}).Find(&seats).Error
+	offset := (pager.Page - 1) * pager.PerPage
+	err := d.db.Offset(offset).Limit(pager.PerPage).Where(&model.Seat{RoomID: roomID}).Find(&seats).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err

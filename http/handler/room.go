@@ -12,7 +12,7 @@ import (
 )
 
 func (h *HandlerStruct) GetAllRoomsHandler(c *gin.Context) {
-	rooms, err := h.svc.GetAllRooms()
+	rooms, err := h.svc.GetAllRooms(parsePager(c))
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, nil)

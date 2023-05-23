@@ -57,8 +57,8 @@ func (s *svc) GenerateToken(user *model.User) (string, error) {
 	return tokenStr, nil
 }
 
-func (s *svc) GetAllUsers() ([]*model.User, error) {
-	users, err := s.dal.GetAllUsers()
+func (s *svc) GetAllUsers(pager *model.Pager) ([]*model.User, error) {
+	users, err := s.dal.GetAllUsers(pager)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
