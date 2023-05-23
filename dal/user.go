@@ -1,16 +1,14 @@
 package dal
 
 import (
-	"gorm.io/gorm"
-
 	"github.com/csguojin/reserve/model"
 	"github.com/csguojin/reserve/util"
 	"github.com/csguojin/reserve/util/logger"
 )
 
-func GetAllUsers(db *gorm.DB) ([]*model.User, error) {
+func (d *dal) GetAllUsers() ([]*model.User, error) {
 	var users []*model.User
-	err := db.Select("id", "username", "email").Find(&users).Error
+	err := d.db.Select("id", "username", "email").Find(&users).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -18,18 +16,18 @@ func GetAllUsers(db *gorm.DB) ([]*model.User, error) {
 	return users, nil
 }
 
-func CeateUser(db *gorm.DB, user *model.User) (*model.User, error) {
-	err := db.Create(user).Error
+func (d *dal) CeateUser(user *model.User) (*model.User, error) {
+	err := d.db.Create(user).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
 	}
-	return GetUser(db, user.ID)
+	return d.GetUser(user.ID)
 }
 
-func GetUser(db *gorm.DB, id int) (*model.User, error) {
+func (d *dal) GetUser(id int) (*model.User, error) {
 	user := &model.User{ID: id}
-	err := db.Select("id", "username", "email").First(&user, id).Error
+	err := d.db.Select("id", "username", "email").First(&user, id).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, util.ErrUserNotFound
@@ -37,9 +35,9 @@ func GetUser(db *gorm.DB, id int) (*model.User, error) {
 	return user, nil
 }
 
-func GetUserByName(db *gorm.DB, username string) (*model.User, error) {
+func (d *dal) GetUserByName(username string) (*model.User, error) {
 	user := &model.User{}
-	err := db.Select("id", "username", "email").Where(&model.User{Username: username}).First(user).Error
+	err := d.db.Select("id", "username", "email").Where(&model.User{Username: username}).First(user).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, util.ErrUserNotFound
@@ -47,9 +45,9 @@ func GetUserByName(db *gorm.DB, username string) (*model.User, error) {
 	return user, nil
 }
 
-func GetUserWithPasswordByName(db *gorm.DB, username string) (*model.User, error) {
+func (d *dal) GetUserWithPasswordByName(username string) (*model.User, error) {
 	user := &model.User{}
-	err := db.Where(&model.User{Username: username}).First(user).Error
+	err := d.db.Where(&model.User{Username: username}).First(user).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, util.ErrUserNotFound
@@ -57,17 +55,17 @@ func GetUserWithPasswordByName(db *gorm.DB, username string) (*model.User, error
 	return user, nil
 }
 
-func UpdateUser(db *gorm.DB, user *model.User) (*model.User, error) {
-	err := db.Model(&model.User{}).Where("id = ?", user.ID).Updates(&user).Error
+func (d *dal) UpdateUser(user *model.User) (*model.User, error) {
+	err := d.db.Model(&model.User{}).Where("id = ?", user.ID).Updates(&user).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
 	}
-	return GetUser(db, user.ID)
+	return d.GetUser(user.ID)
 }
 
-func DeleteUser(db *gorm.DB, userID int) error {
-	err := db.Delete(&model.User{}, userID).Error
+func (d *dal) DeleteUser(userID int) error {
+	err := d.db.Delete(&model.User{}, userID).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return err

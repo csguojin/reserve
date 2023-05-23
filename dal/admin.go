@@ -1,16 +1,14 @@
 package dal
 
 import (
-	"gorm.io/gorm"
-
 	"github.com/csguojin/reserve/model"
 	"github.com/csguojin/reserve/util"
 	"github.com/csguojin/reserve/util/logger"
 )
 
-func GetAllAdmins(db *gorm.DB) ([]*model.Admin, error) {
+func (d *dal) GetAllAdmins() ([]*model.Admin, error) {
 	var admins []*model.Admin
-	err := db.Select("id", "name", "email").Find(&admins).Error
+	err := d.db.Select("id", "name", "email").Find(&admins).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -18,18 +16,18 @@ func GetAllAdmins(db *gorm.DB) ([]*model.Admin, error) {
 	return admins, nil
 }
 
-func CeateAdmin(db *gorm.DB, admin *model.Admin) (*model.Admin, error) {
-	err := db.Create(admin).Error
+func (d *dal) CeateAdmin(admin *model.Admin) (*model.Admin, error) {
+	err := d.db.Create(admin).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
 	}
-	return GetAdmin(db, admin.ID)
+	return d.GetAdmin(admin.ID)
 }
 
-func GetAdmin(db *gorm.DB, id int) (*model.Admin, error) {
+func (d *dal) GetAdmin(id int) (*model.Admin, error) {
 	admin := &model.Admin{ID: id}
-	err := db.Select("id", "name", "email").First(&admin, id).Error
+	err := d.db.Select("id", "name", "email").First(&admin, id).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, util.ErrUserNotFound
@@ -37,9 +35,9 @@ func GetAdmin(db *gorm.DB, id int) (*model.Admin, error) {
 	return admin, nil
 }
 
-func GetAdminByName(db *gorm.DB, name string) (*model.Admin, error) {
+func (d *dal) GetAdminByName(name string) (*model.Admin, error) {
 	admin := &model.Admin{}
-	err := db.Select("id", "name", "email").Where(&model.Admin{Name: name}).First(admin).Error
+	err := d.db.Select("id", "name", "email").Where(&model.Admin{Name: name}).First(admin).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, util.ErrUserNotFound
@@ -47,9 +45,9 @@ func GetAdminByName(db *gorm.DB, name string) (*model.Admin, error) {
 	return admin, nil
 }
 
-func GetAdminWithPasswordByName(db *gorm.DB, name string) (*model.Admin, error) {
+func (d *dal) GetAdminWithPasswordByName(name string) (*model.Admin, error) {
 	admin := &model.Admin{}
-	err := db.Where(&model.Admin{Name: name}).First(admin).Error
+	err := d.db.Where(&model.Admin{Name: name}).First(admin).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, util.ErrUserNotFound
@@ -57,8 +55,8 @@ func GetAdminWithPasswordByName(db *gorm.DB, name string) (*model.Admin, error) 
 	return admin, nil
 }
 
-func DeleteAdmin(db *gorm.DB, adminID int) error {
-	err := db.Delete(&model.Admin{}, adminID).Error
+func (d *dal) DeleteAdmin(adminID int) error {
+	err := d.db.Delete(&model.Admin{}, adminID).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return err

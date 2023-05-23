@@ -1,16 +1,14 @@
 package dal
 
 import (
-	"gorm.io/gorm"
-
 	"github.com/csguojin/reserve/model"
 	"github.com/csguojin/reserve/util"
 	"github.com/csguojin/reserve/util/logger"
 )
 
-func GetAllSeats(db *gorm.DB, roomID int) ([]*model.Seat, error) {
+func (d *dal) GetAllSeats(roomID int) ([]*model.Seat, error) {
 	var seats []*model.Seat
-	err := db.Where(&model.Seat{RoomID: roomID}).Find(&seats).Error
+	err := d.db.Where(&model.Seat{RoomID: roomID}).Find(&seats).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -18,18 +16,18 @@ func GetAllSeats(db *gorm.DB, roomID int) ([]*model.Seat, error) {
 	return seats, nil
 }
 
-func CreateSeat(db *gorm.DB, seat *model.Seat) (*model.Seat, error) {
-	err := db.Create(seat).Error
+func (d *dal) CreateSeat(seat *model.Seat) (*model.Seat, error) {
+	err := d.db.Create(seat).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
 	}
-	return GetSeat(db, seat.ID)
+	return d.GetSeat(seat.ID)
 }
 
-func GetSeat(db *gorm.DB, id int) (*model.Seat, error) {
+func (d *dal) GetSeat(id int) (*model.Seat, error) {
 	seat := &model.Seat{ID: id}
-	err := db.First(&seat, id).Error
+	err := d.db.First(&seat, id).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, util.ErrSeatNotFound
@@ -37,17 +35,17 @@ func GetSeat(db *gorm.DB, id int) (*model.Seat, error) {
 	return seat, nil
 }
 
-func UpdateSeat(db *gorm.DB, seat *model.Seat) (*model.Seat, error) {
-	err := db.Model(&model.Seat{}).Where("id = ?", seat.ID).Updates(&seat).Error
+func (d *dal) UpdateSeat(seat *model.Seat) (*model.Seat, error) {
+	err := d.db.Model(&model.Seat{}).Where("id = ?", seat.ID).Updates(&seat).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
 	}
-	return GetSeat(db, seat.ID)
+	return d.GetSeat(seat.ID)
 }
 
-func DeleteSeat(db *gorm.DB, seatID int) error {
-	err := db.Delete(&model.Seat{}, seatID).Error
+func (d *dal) DeleteSeat(seatID int) error {
+	err := d.db.Delete(&model.Seat{}, seatID).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return err

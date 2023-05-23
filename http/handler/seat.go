@@ -5,13 +5,12 @@ import (
 	"strconv"
 
 	"github.com/csguojin/reserve/model"
-	"github.com/csguojin/reserve/service"
 	"github.com/csguojin/reserve/util"
 	"github.com/csguojin/reserve/util/logger"
 	"github.com/gin-gonic/gin"
 )
 
-func GetAllSeatsHandler(c *gin.Context) {
+func (h *HandlerStruct) GetAllSeatsHandler(c *gin.Context) {
 	roomIDStr := c.Param("room_id")
 	if roomIDStr == "" {
 		logger.L.Errorln(util.ErrRoomIDNil)
@@ -25,7 +24,7 @@ func GetAllSeatsHandler(c *gin.Context) {
 		return
 	}
 
-	seats, err := service.GetAllSeats(roomID)
+	seats, err := h.svc.GetAllSeats(roomID)
 	if err != nil {
 		logger.L.Errorln(err)
 		switch err {
@@ -40,7 +39,7 @@ func GetAllSeatsHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, seats)
 }
 
-func CreateSeatHandler(c *gin.Context) {
+func (h *HandlerStruct) CreateSeatHandler(c *gin.Context) {
 	roomIDStr := c.Param("room_id")
 	if roomIDStr == "" {
 		logger.L.Errorln(util.ErrRoomIDNil)
@@ -63,7 +62,7 @@ func CreateSeatHandler(c *gin.Context) {
 	}
 	seat.ID = 0
 	seat.RoomID = roomID
-	seat, err = service.CreateSeat(seat)
+	seat, err = h.svc.CreateSeat(seat)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -72,7 +71,7 @@ func CreateSeatHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, seat)
 }
 
-func GetSeatHandler(c *gin.Context) {
+func (h *HandlerStruct) GetSeatHandler(c *gin.Context) {
 	seatIDStr := c.Param("seat_id")
 	if seatIDStr == "" {
 		logger.L.Errorln(util.ErrSeatIDNil)
@@ -86,7 +85,7 @@ func GetSeatHandler(c *gin.Context) {
 		return
 	}
 
-	seat, err := service.GetSeat(seatID)
+	seat, err := h.svc.GetSeat(seatID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -95,7 +94,7 @@ func GetSeatHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, seat)
 }
 
-func UpdateSeatHandler(c *gin.Context) {
+func (h *HandlerStruct) UpdateSeatHandler(c *gin.Context) {
 	seatIDStr := c.Param("seat_id")
 	if seatIDStr == "" {
 		logger.L.Errorln(util.ErrSeatIDNil)
@@ -117,7 +116,7 @@ func UpdateSeatHandler(c *gin.Context) {
 		return
 	}
 	seat.ID = seatID
-	seat, err = service.UpdateSeat(seat)
+	seat, err = h.svc.UpdateSeat(seat)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -126,7 +125,7 @@ func UpdateSeatHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, seat)
 }
 
-func DeleteSeatHandler(c *gin.Context) {
+func (h *HandlerStruct) DeleteSeatHandler(c *gin.Context) {
 	seatIDStr := c.Param("seat_id")
 	if seatIDStr == "" {
 		logger.L.Errorln(util.ErrSeatIDNil)
@@ -140,7 +139,7 @@ func DeleteSeatHandler(c *gin.Context) {
 		return
 	}
 
-	err = service.DeleteSeat(seatID)
+	err = h.svc.DeleteSeat(seatID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

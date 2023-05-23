@@ -8,12 +8,11 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/csguojin/reserve/model"
-	"github.com/csguojin/reserve/service"
 	"github.com/csguojin/reserve/util"
 	"github.com/csguojin/reserve/util/logger"
 )
 
-func GetResvsByUserHandler(c *gin.Context) {
+func (h *HandlerStruct) GetResvsByUserHandler(c *gin.Context) {
 	userIDStr := c.Param("user_id")
 	if userIDStr == "" {
 		logger.L.Errorln(util.ErrUserIDNil)
@@ -27,7 +26,7 @@ func GetResvsByUserHandler(c *gin.Context) {
 		return
 	}
 
-	resvs, err := service.GetResvsByUser(userID)
+	resvs, err := h.svc.GetResvsByUser(userID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -37,7 +36,7 @@ func GetResvsByUserHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, &resvs)
 }
 
-func CreateResvHandler(c *gin.Context) {
+func (h *HandlerStruct) CreateResvHandler(c *gin.Context) {
 	userIDStr := c.Param("user_id")
 	if userIDStr == "" {
 		logger.L.Errorln(util.ErrUserIDNil)
@@ -71,7 +70,7 @@ func CreateResvHandler(c *gin.Context) {
 	resv.UserID = userID
 	resv.Status = 0
 
-	resv, err = service.CreateResv(resv)
+	resv, err = h.svc.CreateResv(resv)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -81,7 +80,7 @@ func CreateResvHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, &resv)
 }
 
-func SigninHandler(c *gin.Context) {
+func (h *HandlerStruct) SigninHandler(c *gin.Context) {
 	userIDStr := c.Param("user_id")
 	if userIDStr == "" {
 		logger.L.Errorln(util.ErrUserIDNil)
@@ -108,7 +107,7 @@ func SigninHandler(c *gin.Context) {
 		return
 	}
 
-	resv, err := service.Signin(resvID, userID)
+	resv, err := h.svc.Signin(resvID, userID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -118,7 +117,7 @@ func SigninHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, &resv)
 }
 
-func SignoutHandler(c *gin.Context) {
+func (h *HandlerStruct) SignoutHandler(c *gin.Context) {
 	userIDStr := c.Param("user_id")
 	if userIDStr == "" {
 		logger.L.Errorln(util.ErrUserIDNil)
@@ -145,7 +144,7 @@ func SignoutHandler(c *gin.Context) {
 		return
 	}
 
-	resv, err := service.Signout(resvID, userID)
+	resv, err := h.svc.Signout(resvID, userID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -155,7 +154,7 @@ func SignoutHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, &resv)
 }
 
-func CancelResvHandler(c *gin.Context) {
+func (h *HandlerStruct) CancelResvHandler(c *gin.Context) {
 	userIDStr := c.Param("user_id")
 	if userIDStr == "" {
 		logger.L.Errorln(util.ErrUserIDNil)
@@ -182,7 +181,7 @@ func CancelResvHandler(c *gin.Context) {
 		return
 	}
 
-	resv, err := service.CancelResv(resvID, userID)
+	resv, err := h.svc.CancelResv(resvID, userID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

@@ -4,14 +4,13 @@ import (
 	"errors"
 	"time"
 
-	"github.com/csguojin/reserve/dal"
 	"github.com/csguojin/reserve/model"
 	"github.com/csguojin/reserve/util"
 	"github.com/csguojin/reserve/util/logger"
 )
 
-func CreateResv(resv *model.Resv) (*model.Resv, error) {
-	resv, err := dal.CreateResv(dal.GetDB(), resv)
+func (s *svc) CreateResv(resv *model.Resv) (*model.Resv, error) {
+	resv, err := s.dal.CreateResv(resv)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -19,8 +18,8 @@ func CreateResv(resv *model.Resv) (*model.Resv, error) {
 	return resv, nil
 }
 
-func GetResv(resvID int) (*model.Resv, error) {
-	resv, err := dal.GetResv(dal.GetDB(), resvID)
+func (s *svc) GetResv(resvID int) (*model.Resv, error) {
+	resv, err := s.dal.GetResv(resvID)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -28,8 +27,8 @@ func GetResv(resvID int) (*model.Resv, error) {
 	return resv, nil
 }
 
-func UpdateResvStatus(resv *model.Resv) (*model.Resv, error) {
-	resv, err := dal.UpdateResvStatus(dal.GetDB(), resv)
+func (s *svc) UpdateResvStatus(resv *model.Resv) (*model.Resv, error) {
+	resv, err := s.dal.UpdateResvStatus(resv)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -37,8 +36,8 @@ func UpdateResvStatus(resv *model.Resv) (*model.Resv, error) {
 	return resv, nil
 }
 
-func GetResvsByUser(userID int) ([]*model.Resv, error) {
-	resv, err := dal.GetResvsByUser(dal.GetDB(), userID)
+func (s *svc) GetResvsByUser(userID int) ([]*model.Resv, error) {
+	resv, err := s.dal.GetResvsByUser(userID)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -46,8 +45,8 @@ func GetResvsByUser(userID int) ([]*model.Resv, error) {
 	return resv, nil
 }
 
-func GetResvsBySeat(seatID int) ([]*model.Resv, error) {
-	resv, err := dal.GetResvsBySeat(dal.GetDB(), seatID)
+func (s *svc) GetResvsBySeat(seatID int) ([]*model.Resv, error) {
+	resv, err := s.dal.GetResvsBySeat(seatID)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -55,8 +54,8 @@ func GetResvsBySeat(seatID int) ([]*model.Resv, error) {
 	return resv, nil
 }
 
-func Signin(resvID int, userID int) (*model.Resv, error) {
-	resv, err := GetResv(resvID)
+func (s *svc) Signin(resvID int, userID int) (*model.Resv, error) {
+	resv, err := s.dal.GetResv(resvID)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -88,7 +87,7 @@ func Signin(resvID int, userID int) (*model.Resv, error) {
 
 	resv.SigninTime = &now
 
-	resv, err = UpdateResvStatus(resv)
+	resv, err = s.dal.UpdateResvStatus(resv)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -96,8 +95,8 @@ func Signin(resvID int, userID int) (*model.Resv, error) {
 	return resv, nil
 }
 
-func Signout(resvID int, userID int) (*model.Resv, error) {
-	resv, err := GetResv(resvID)
+func (s *svc) Signout(resvID int, userID int) (*model.Resv, error) {
+	resv, err := s.dal.GetResv(resvID)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -117,7 +116,7 @@ func Signout(resvID int, userID int) (*model.Resv, error) {
 	now := time.Now()
 	resv.SignoutTime = &now
 
-	resv, err = UpdateResvStatus(resv)
+	resv, err = s.dal.UpdateResvStatus(resv)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -132,8 +131,8 @@ func Signout(resvID int, userID int) (*model.Resv, error) {
 	return resv, nil
 }
 
-func CancelResv(resvID int, userID int) (*model.Resv, error) {
-	resv, err := GetResv(resvID)
+func (s *svc) CancelResv(resvID int, userID int) (*model.Resv, error) {
+	resv, err := s.dal.GetResv(resvID)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -146,7 +145,7 @@ func CancelResv(resvID int, userID int) (*model.Resv, error) {
 
 	resv.Status = 1
 
-	resv, err = UpdateResvStatus(resv)
+	resv, err = s.dal.UpdateResvStatus(resv)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err

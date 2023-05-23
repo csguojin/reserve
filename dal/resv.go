@@ -4,15 +4,13 @@ import (
 	"errors"
 	"time"
 
-	"gorm.io/gorm"
-
 	"github.com/csguojin/reserve/model"
 	"github.com/csguojin/reserve/util"
 	"github.com/csguojin/reserve/util/logger"
 )
 
-func CreateResv(db *gorm.DB, resv *model.Resv) (*model.Resv, error) {
-	tx := db.Begin()
+func (d *dal) CreateResv(resv *model.Resv) (*model.Resv, error) {
+	tx := d.db.Begin()
 	if tx.Error != nil {
 		logger.L.Errorln(tx.Error)
 		return nil, tx.Error
@@ -127,9 +125,9 @@ func checkRoomResv(room *model.Room, resv *model.Resv) bool {
 		resv.EndTime.Second() <= closeTime.Second()
 }
 
-func GetResv(db *gorm.DB, resvID int) (*model.Resv, error) {
+func (d *dal) GetResv(resvID int) (*model.Resv, error) {
 	resv := &model.Resv{ID: resvID}
-	err := db.First(&resv, resvID).Error
+	err := d.db.First(&resv, resvID).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -137,8 +135,8 @@ func GetResv(db *gorm.DB, resvID int) (*model.Resv, error) {
 	return resv, nil
 }
 
-func UpdateResvStatus(db *gorm.DB, resv *model.Resv) (*model.Resv, error) {
-	err := db.Model(&model.Resv{}).Where("id = ?", resv.ID).Updates(
+func (d *dal) UpdateResvStatus(resv *model.Resv) (*model.Resv, error) {
+	err := d.db.Model(&model.Resv{}).Where("id = ?", resv.ID).Updates(
 		&model.Resv{
 			SigninTime:  resv.SigninTime,
 			SignoutTime: resv.SignoutTime,
@@ -148,18 +146,18 @@ func UpdateResvStatus(db *gorm.DB, resv *model.Resv) (*model.Resv, error) {
 		logger.L.Errorln(err)
 		return nil, err
 	}
-	return GetResv(db, resv.ID)
+	return d.GetResv(resv.ID)
 }
 
-func updateResvTime(db *gorm.DB, newResv *model.Resv) (*model.Resv, error) {
-	tx := db.Begin()
+func (d *dal) updateResvTime(newResv *model.Resv) (*model.Resv, error) {
+	tx := d.db.Begin()
 	if tx.Error != nil {
 		logger.L.Errorln(tx.Error)
 		return nil, tx.Error
 	}
 
 	oldResv := &model.Resv{ID: newResv.ID}
-	err := db.First(&oldResv, newResv.ID).Error
+	err := d.db.First(&oldResv, newResv.ID).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		tx.Rollback()
@@ -218,7 +216,7 @@ func updateResvTime(db *gorm.DB, newResv *model.Resv) (*model.Resv, error) {
 		return nil, util.ErrResvUserTimeConflict
 	}
 
-	err = db.Model(&model.Resv{}).Where("id = ?", newResv.ID).Updates(
+	err = d.db.Model(&model.Resv{}).Where("id = ?", newResv.ID).Updates(
 		&model.Resv{
 			StartTime: newResv.StartTime,
 			EndTime:   newResv.EndTime,
@@ -235,12 +233,12 @@ func updateResvTime(db *gorm.DB, newResv *model.Resv) (*model.Resv, error) {
 		return nil, err
 	}
 
-	return GetResv(db, newResv.ID)
+	return d.GetResv(newResv.ID)
 }
 
-func GetResvsByUser(db *gorm.DB, userID int) ([]*model.Resv, error) {
+func (d *dal) GetResvsByUser(userID int) ([]*model.Resv, error) {
 	var resvs []*model.Resv
-	err := db.Where(&model.Resv{UserID: userID}).Find(&resvs).Error
+	err := d.db.Where(&model.Resv{UserID: userID}).Find(&resvs).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -248,9 +246,9 @@ func GetResvsByUser(db *gorm.DB, userID int) ([]*model.Resv, error) {
 	return resvs, nil
 }
 
-func GetResvsBySeat(db *gorm.DB, seatID int) ([]*model.Resv, error) {
+func (d *dal) GetResvsBySeat(seatID int) ([]*model.Resv, error) {
 	var resvs []*model.Resv
-	err := db.Where(&model.Resv{SeatID: seatID}).Find(&resvs).Error
+	err := d.db.Where(&model.Resv{SeatID: seatID}).Find(&resvs).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err

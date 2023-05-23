@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/csguojin/reserve/model"
-	"github.com/csguojin/reserve/service"
 	"github.com/csguojin/reserve/util"
 	"github.com/csguojin/reserve/util/logger"
 )
@@ -18,7 +17,7 @@ type AdminRsp struct {
 	Email string `json:"email"`
 }
 
-func CreateAdminHandler(c *gin.Context) {
+func (h *HandlerStruct) CreateAdminHandler(c *gin.Context) {
 	var admin *model.Admin
 	err := c.ShouldBindJSON(&admin)
 	if err != nil {
@@ -26,7 +25,7 @@ func CreateAdminHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	admin, err = service.CreateAdmin(admin)
+	admin, err = h.svc.CreateAdmin(admin)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -48,7 +47,7 @@ type AdminLoginRsp struct {
 	Token string `json:"token"`
 }
 
-func AdminLoginHandler(c *gin.Context) {
+func (h *HandlerStruct) AdminLoginHandler(c *gin.Context) {
 	var admin *model.Admin
 	err := c.ShouldBindJSON(&admin)
 	if err != nil || admin.Name == "" || admin.Password == "" {
@@ -56,7 +55,7 @@ func AdminLoginHandler(c *gin.Context) {
 		return
 	}
 
-	admin, err = service.CheckAdmin(admin.Name, admin.Password)
+	admin, err = h.svc.CheckAdmin(admin.Name, admin.Password)
 	if err != nil {
 		logger.L.Errorln(err)
 		switch err {
@@ -70,7 +69,7 @@ func AdminLoginHandler(c *gin.Context) {
 		return
 	}
 
-	token, err := service.GenerateAdminToken(admin)
+	token, err := h.svc.GenerateAdminToken(admin)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -86,8 +85,8 @@ func AdminLoginHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, adminRsp)
 }
 
-func GetAllAdminsHandler(c *gin.Context) {
-	admins, err := service.GetAllAdmins()
+func (h *HandlerStruct) GetAllAdminsHandler(c *gin.Context) {
+	admins, err := h.svc.GetAllAdmins()
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, nil)
@@ -106,7 +105,7 @@ func GetAllAdminsHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, adminsRsp)
 }
 
-func GetAdminHandler(c *gin.Context) {
+func (h *HandlerStruct) GetAdminHandler(c *gin.Context) {
 	adminIDStr := c.Param("admin_id")
 	if adminIDStr == "" {
 		logger.L.Errorln(util.ErrAdminIDNil)
@@ -120,7 +119,7 @@ func GetAdminHandler(c *gin.Context) {
 		return
 	}
 
-	admin, err := service.GetAdminNoPassword(adminID)
+	admin, err := h.svc.GetAdminNoPassword(adminID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, nil)
@@ -136,7 +135,7 @@ func GetAdminHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, adminRsp)
 }
 
-func DeleteAdminHandler(c *gin.Context) {
+func (h *HandlerStruct) DeleteAdminHandler(c *gin.Context) {
 	adminIDStr := c.Param("admin_id")
 	if adminIDStr == "" {
 		logger.L.Errorln(util.ErrAdminIDNil)
@@ -150,7 +149,7 @@ func DeleteAdminHandler(c *gin.Context) {
 		return
 	}
 
-	err = service.DeleteAdmin(adminID)
+	err = h.svc.DeleteAdmin(adminID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

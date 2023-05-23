@@ -8,24 +8,28 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/csguojin/reserve/dal"
 	"github.com/csguojin/reserve/model"
 	"github.com/csguojin/reserve/util"
 	"github.com/csguojin/reserve/util/logger"
 )
 
-func CreateUser(user *model.User) (*model.User, error) {
+func (s *svc) CreateUser(user *model.User) (*model.User, error) {
 	encryedPwd, err := encryptPassword(user.Password)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
 	}
 	user.Password = encryedPwd
-	return dal.CeateUser(dal.GetDB(), user)
+	user, err = s.dal.CeateUser(user)
+	if err != nil {
+		logger.L.Errorln(err)
+		return nil, err
+	}
+	return user, nil
 }
 
-func CheckUser(username string, password string) (*model.User, error) {
-	user, err := dal.GetUserWithPasswordByName(dal.GetDB(), username)
+func (s *svc) CheckUser(username string, password string) (*model.User, error) {
+	user, err := s.dal.GetUserWithPasswordByName(username)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -38,7 +42,7 @@ func CheckUser(username string, password string) (*model.User, error) {
 	return user, nil
 }
 
-func GenerateToken(user *model.User) (string, error) {
+func (s *svc) GenerateToken(user *model.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"exp": time.Now().Add(time.Hour).Unix(),
 
@@ -50,12 +54,11 @@ func GenerateToken(user *model.User) (string, error) {
 		logger.L.Errorln(err)
 		return "", err
 	}
-
 	return tokenStr, nil
 }
 
-func GetAllUsers() ([]*model.User, error) {
-	users, err := dal.GetAllUsers(dal.GetDB())
+func (s *svc) GetAllUsers() ([]*model.User, error) {
+	users, err := s.dal.GetAllUsers()
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -63,8 +66,8 @@ func GetAllUsers() ([]*model.User, error) {
 	return users, nil
 }
 
-func GetUser(userID int) (*model.User, error) {
-	user, err := dal.GetUser(dal.GetDB(), userID)
+func (s *svc) GetUser(userID int) (*model.User, error) {
+	user, err := s.dal.GetUser(userID)
 	user.Password = ""
 	if err != nil {
 		logger.L.Errorln(err)
@@ -73,7 +76,7 @@ func GetUser(userID int) (*model.User, error) {
 	return user, nil
 }
 
-func UpdateUser(user *model.User) (*model.User, error) {
+func (s *svc) UpdateUser(user *model.User) (*model.User, error) {
 	if user.Password != "" {
 		encryedPwd, err := encryptPassword(user.Password)
 		if err != nil {
@@ -82,7 +85,7 @@ func UpdateUser(user *model.User) (*model.User, error) {
 		}
 		user.Password = encryedPwd
 	}
-	user, err := dal.UpdateUser(dal.GetDB(), user)
+	user, err := s.dal.UpdateUser(user)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -90,8 +93,8 @@ func UpdateUser(user *model.User) (*model.User, error) {
 	return user, nil
 }
 
-func DeleteUser(userID int) error {
-	err := dal.DeleteUser(dal.GetDB(), userID)
+func (s *svc) DeleteUser(userID int) error {
+	err := s.dal.DeleteUser(userID)
 	if err != nil {
 		logger.L.Errorln(err)
 		return err

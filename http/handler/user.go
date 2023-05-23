@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/csguojin/reserve/model"
-	"github.com/csguojin/reserve/service"
 	"github.com/csguojin/reserve/util"
 	"github.com/csguojin/reserve/util/logger"
 )
@@ -18,7 +17,7 @@ type UserRsp struct {
 	Email    string `json:"email"`
 }
 
-func RegisterHandler(c *gin.Context) {
+func (h *HandlerStruct) RegisterHandler(c *gin.Context) {
 	var user *model.User
 	err := c.ShouldBindJSON(&user)
 	if err != nil {
@@ -26,7 +25,7 @@ func RegisterHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	user, err = service.CreateUser(user)
+	user, err = h.svc.CreateUser(user)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -48,7 +47,7 @@ type UserLoginRsp struct {
 	Token    string `json:"token"`
 }
 
-func LoginHandler(c *gin.Context) {
+func (h *HandlerStruct) LoginHandler(c *gin.Context) {
 	var user *model.User
 	err := c.ShouldBindJSON(&user)
 	if err != nil || user.Username == "" || user.Password == "" {
@@ -56,7 +55,7 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	user, err = service.CheckUser(user.Username, user.Password)
+	user, err = h.svc.CheckUser(user.Username, user.Password)
 	if err != nil {
 		logger.L.Errorln(err)
 		switch err {
@@ -70,7 +69,7 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	token, err := service.GenerateToken(user)
+	token, err := h.svc.GenerateToken(user)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -86,8 +85,8 @@ func LoginHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, userRsp)
 }
 
-func GetAllUsersHandler(c *gin.Context) {
-	users, err := service.GetAllUsers()
+func (h *HandlerStruct) GetAllUsersHandler(c *gin.Context) {
+	users, err := h.svc.GetAllUsers()
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, nil)
@@ -106,7 +105,7 @@ func GetAllUsersHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, usersRsp)
 }
 
-func GetUserHandler(c *gin.Context) {
+func (h *HandlerStruct) GetUserHandler(c *gin.Context) {
 	userIDStr := c.Param("user_id")
 	if userIDStr == "" {
 		logger.L.Errorln(util.ErrUserIDNil)
@@ -120,7 +119,7 @@ func GetUserHandler(c *gin.Context) {
 		return
 	}
 
-	user, err := service.GetUser(userID)
+	user, err := h.svc.GetUser(userID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, nil)
@@ -136,7 +135,7 @@ func GetUserHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, userRsp)
 }
 
-func UpdateUserHandler(c *gin.Context) {
+func (h *HandlerStruct) UpdateUserHandler(c *gin.Context) {
 	userIDStr := c.Param("user_id")
 	if userIDStr == "" {
 		logger.L.Errorln(util.ErrUserIDNil)
@@ -159,7 +158,7 @@ func UpdateUserHandler(c *gin.Context) {
 
 	user.ID = userID
 
-	user, err = service.UpdateUser(user)
+	user, err = h.svc.UpdateUser(user)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -175,7 +174,7 @@ func UpdateUserHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, userRsp)
 }
 
-func DeleteUserHandler(c *gin.Context) {
+func (h *HandlerStruct) DeleteUserHandler(c *gin.Context) {
 	userIDStr := c.Param("user_id")
 	if userIDStr == "" {
 		logger.L.Errorln(util.ErrUserIDNil)
@@ -189,7 +188,7 @@ func DeleteUserHandler(c *gin.Context) {
 		return
 	}
 
-	err = service.DeleteUser(userID)
+	err = h.svc.DeleteUser(userID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

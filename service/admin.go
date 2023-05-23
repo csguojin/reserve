@@ -8,24 +8,28 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/csguojin/reserve/dal"
 	"github.com/csguojin/reserve/model"
 	"github.com/csguojin/reserve/util"
 	"github.com/csguojin/reserve/util/logger"
 )
 
-func CreateAdmin(admin *model.Admin) (*model.Admin, error) {
+func (s *svc) CreateAdmin(admin *model.Admin) (*model.Admin, error) {
 	encryedPwd, err := encryptPassword(admin.Password)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
 	}
 	admin.Password = encryedPwd
-	return dal.CeateAdmin(dal.GetDB(), admin)
+	admin, err = s.dal.CeateAdmin(admin)
+	if err != nil {
+		logger.L.Errorln(err)
+		return nil, err
+	}
+	return admin, nil
 }
 
-func CheckAdmin(adminname string, password string) (*model.Admin, error) {
-	admin, err := dal.GetAdminWithPasswordByName(dal.GetDB(), adminname)
+func (s *svc) CheckAdmin(adminname string, password string) (*model.Admin, error) {
+	admin, err := s.dal.GetAdminWithPasswordByName(adminname)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -38,7 +42,7 @@ func CheckAdmin(adminname string, password string) (*model.Admin, error) {
 	return admin, nil
 }
 
-func GenerateAdminToken(admin *model.Admin) (string, error) {
+func (s *svc) GenerateAdminToken(admin *model.Admin) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"exp": time.Now().Add(time.Hour).Unix(),
 
@@ -54,8 +58,8 @@ func GenerateAdminToken(admin *model.Admin) (string, error) {
 	return tokenStr, nil
 }
 
-func GetAllAdmins() ([]*model.Admin, error) {
-	admins, err := dal.GetAllAdmins(dal.GetDB())
+func (s *svc) GetAllAdmins() ([]*model.Admin, error) {
+	admins, err := s.dal.GetAllAdmins()
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -63,8 +67,8 @@ func GetAllAdmins() ([]*model.Admin, error) {
 	return admins, nil
 }
 
-func GetAdminNoPassword(adminID int) (*model.Admin, error) {
-	admin, err := dal.GetAdmin(dal.GetDB(), adminID)
+func (s *svc) GetAdminNoPassword(adminID int) (*model.Admin, error) {
+	admin, err := s.dal.GetAdmin(adminID)
 	admin.Password = ""
 	if err != nil {
 		logger.L.Errorln(err)
@@ -73,8 +77,8 @@ func GetAdminNoPassword(adminID int) (*model.Admin, error) {
 	return admin, nil
 }
 
-func DeleteAdmin(adminID int) error {
-	err := dal.DeleteAdmin(dal.GetDB(), adminID)
+func (s *svc) DeleteAdmin(adminID int) error {
+	err := s.dal.DeleteAdmin(adminID)
 	if err != nil {
 		logger.L.Errorln(err)
 		return err

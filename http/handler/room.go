@@ -7,13 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/csguojin/reserve/model"
-	"github.com/csguojin/reserve/service"
 	"github.com/csguojin/reserve/util"
 	"github.com/csguojin/reserve/util/logger"
 )
 
-func GetAllRoomsHandler(c *gin.Context) {
-	rooms, err := service.GetAllRooms()
+func (h *HandlerStruct) GetAllRoomsHandler(c *gin.Context) {
+	rooms, err := h.svc.GetAllRooms()
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, nil)
@@ -23,7 +22,7 @@ func GetAllRoomsHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, rooms)
 }
 
-func CreateRoomHandler(c *gin.Context) {
+func (h *HandlerStruct) CreateRoomHandler(c *gin.Context) {
 	var room *model.Room
 	err := c.ShouldBindJSON(&room)
 	if err != nil {
@@ -32,7 +31,7 @@ func CreateRoomHandler(c *gin.Context) {
 		return
 	}
 	room.ID = 0
-	room, err = service.CreateRoom(room)
+	room, err = h.svc.CreateRoom(room)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -41,7 +40,7 @@ func CreateRoomHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, room)
 }
 
-func GetRoomHandler(c *gin.Context) {
+func (h *HandlerStruct) GetRoomHandler(c *gin.Context) {
 	roomIDStr := c.Param("room_id")
 	if roomIDStr == "" {
 		logger.L.Errorln(util.ErrRoomIDNil)
@@ -55,7 +54,7 @@ func GetRoomHandler(c *gin.Context) {
 		return
 	}
 
-	room, err := service.GetRoom(roomID)
+	room, err := h.svc.GetRoom(roomID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -64,7 +63,7 @@ func GetRoomHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, room)
 }
 
-func UpdateRoomHandler(c *gin.Context) {
+func (h *HandlerStruct) UpdateRoomHandler(c *gin.Context) {
 	roomIDStr := c.Param("room_id")
 	if roomIDStr == "" {
 		logger.L.Errorln(util.ErrRoomIDNil)
@@ -86,7 +85,7 @@ func UpdateRoomHandler(c *gin.Context) {
 		return
 	}
 	room.ID = roomID
-	room, err = service.UpdateRoom(room)
+	room, err = h.svc.UpdateRoom(room)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -95,7 +94,7 @@ func UpdateRoomHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, room)
 }
 
-func DeleteRoomHandler(c *gin.Context) {
+func (h *HandlerStruct) DeleteRoomHandler(c *gin.Context) {
 	roomIDStr := c.Param("room_id")
 	if roomIDStr == "" {
 		logger.L.Errorln(util.ErrRoomIDNil)
@@ -109,7 +108,7 @@ func DeleteRoomHandler(c *gin.Context) {
 		return
 	}
 
-	err = service.DeleteRoom(roomID)
+	err = h.svc.DeleteRoom(roomID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

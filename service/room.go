@@ -1,13 +1,12 @@
 package service
 
 import (
-	"github.com/csguojin/reserve/dal"
 	"github.com/csguojin/reserve/model"
 	"github.com/csguojin/reserve/util/logger"
 )
 
-func GetAllRooms() ([]*model.Room, error) {
-	rooms, err := dal.GetAllRooms(dal.GetDB())
+func (s *svc) GetAllRooms() ([]*model.Room, error) {
+	rooms, err := s.dal.GetAllRooms()
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -15,8 +14,8 @@ func GetAllRooms() ([]*model.Room, error) {
 	return rooms, nil
 }
 
-func CreateRoom(room *model.Room) (*model.Room, error) {
-	room, err := dal.CreateRoom(dal.GetDB(), room)
+func (s *svc) CreateRoom(room *model.Room) (*model.Room, error) {
+	room, err := s.dal.CreateRoom(room)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -24,8 +23,8 @@ func CreateRoom(room *model.Room) (*model.Room, error) {
 	return room, nil
 }
 
-func GetRoom(roomID int) (*model.Room, error) {
-	room, err := dal.GetRoom(dal.GetDB(), roomID)
+func (s *svc) GetRoom(roomID int) (*model.Room, error) {
+	room, err := s.dal.GetRoom(roomID)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -33,8 +32,8 @@ func GetRoom(roomID int) (*model.Room, error) {
 	return room, nil
 }
 
-func UpdateRoom(room *model.Room) (*model.Room, error) {
-	room, err := dal.UpdateRoom(dal.GetDB(), room)
+func (s *svc) UpdateRoom(room *model.Room) (*model.Room, error) {
+	room, err := s.dal.UpdateRoom(room)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -42,8 +41,8 @@ func UpdateRoom(room *model.Room) (*model.Room, error) {
 	return room, nil
 }
 
-func DeleteRoom(roomID int) error {
-	err := dal.DeleteRoom(dal.GetDB(), roomID)
+func (s *svc) DeleteRoom(roomID int) error {
+	err := s.dal.DeleteRoom(roomID)
 	if err != nil {
 		logger.L.Errorln(err)
 		return err
