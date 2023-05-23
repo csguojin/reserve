@@ -57,11 +57,18 @@ func (h *HandlerStruct) CreateResvHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	startTime := (*resv.StartTime).Truncate(time.Minute)
+	resv.StartTime = &startTime
+	endTime := (*resv.EndTime).Truncate(time.Minute)
+	resv.EndTime = &endTime
+
 	if resv.SeatID <= 0 ||
 		resv.StartTime == nil ||
 		resv.EndTime == nil ||
 		!resv.EndTime.After(*resv.StartTime) ||
-		resv.EndTime.Sub(*resv.StartTime) >= time.Hour*24 {
+		resv.EndTime.Sub(*resv.StartTime) >= time.Hour*24 ||
+		!(resv.StartTime.Minute()%10 == 0) || !(resv.EndTime.Minute()%10 == 0) {
 		logger.L.Errorln(util.ErrResvTimeIllegal)
 		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrResvTimeIllegal.Error()})
 		return
