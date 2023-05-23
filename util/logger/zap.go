@@ -8,6 +8,8 @@ import (
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+
+	_ "github.com/csguojin/reserve/config"
 )
 
 func init() {
