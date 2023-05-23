@@ -106,23 +106,18 @@ func (d *dal) CreateResv(resv *model.Resv) (*model.Resv, error) {
 }
 
 func checkRoomResv(room *model.Room, resv *model.Resv) bool {
-	layout := "15:04:05"
-	openTime, err := time.Parse(layout, room.OpenTime)
+	openTime, err := time.Parse(time.RFC3339, resv.StartTime.Format("2006-01-02T")+room.OpenTime+"+08:00")
 	if err != nil {
-		logger.L.Errorln("room opentime format error", room.OpenTime)
+		logger.L.Errorln("room opentime format error", room.OpenTime, err)
 		return false
 	}
-	closeTime, err := time.Parse(layout, room.CloseTime)
+
+	closeTime, err := time.Parse(time.RFC3339, resv.StartTime.Format("2006-01-02T")+room.CloseTime+"+08:00")
 	if err != nil {
-		logger.L.Errorln("room closetime format error", room.CloseTime)
+		logger.L.Errorln("room closetime format error", room.CloseTime, err)
 		return false
 	}
-	return resv.StartTime.Hour() >= openTime.Hour() &&
-		resv.StartTime.Minute() >= openTime.Minute() &&
-		resv.StartTime.Second() >= openTime.Second() &&
-		resv.EndTime.Hour() <= closeTime.Hour() &&
-		resv.EndTime.Minute() <= closeTime.Minute() &&
-		resv.EndTime.Second() <= closeTime.Second()
+	return resv.StartTime.Before(*resv.EndTime) && resv.StartTime.After(openTime) && resv.EndTime.Before(closeTime)
 }
 
 func (d *dal) GetResv(resvID int) (*model.Resv, error) {
