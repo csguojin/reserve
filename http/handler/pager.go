@@ -1,25 +1,23 @@
 package handler
 
 import (
-	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 
 	"github.com/csguojin/reserve/model"
 	"github.com/csguojin/reserve/util/logger"
-	"github.com/gin-gonic/gin"
 )
 
 func parsePager(c *gin.Context) *model.Pager {
 	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
 	if err != nil {
-		logger.L.Errorln(err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		logger.L.Debugln(err)
 		page = 1
 	}
 	perPage, err := strconv.Atoi(c.DefaultQuery("per_page", "10"))
 	if err != nil {
-		logger.L.Errorln(err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		logger.L.Debugln(err)
 		perPage = 10
 	}
 	if page <= 0 {

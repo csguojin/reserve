@@ -64,6 +64,12 @@ func main() {
 		admin.GET("/users/:user_id", middleware.AuthAdminMiddleware(), h.GetUserHandler)
 		admin.PUT("/users/:user_id", middleware.AuthAdminMiddleware(), h.UpdateUserHandler)
 		admin.DELETE("/users/:user_id", middleware.AuthAdminMiddleware(), h.DeleteUserHandler)
+
+		admin.GET("/users/:user_id/reservations", middleware.AuthAdminMiddleware(), h.GetResvsByUserHandler)
+		admin.POST("/users/:user_id/reservations", middleware.AuthAdminMiddleware(), h.CreateResvHandler)
+		admin.POST("/users/:user_id/reservations/:resv_id/signin", middleware.AuthAdminMiddleware(), h.SigninHandler)
+		admin.POST("/users/:user_id/reservations/:resv_id/signout", middleware.AuthAdminMiddleware(), h.SignoutHandler)
+		admin.POST("/users/:user_id/reservations/:resv_id/cancel", middleware.AuthAdminMiddleware(), h.CancelResvHandler)
 	}
 
 	router.Run(":" + viper.GetString("server.port"))
