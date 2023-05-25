@@ -30,9 +30,9 @@ func main() {
 		v1.GET("/rooms", h.GetAllRoomsHandler)
 		v1.GET("/rooms/:room_id/seats", h.GetAllSeatsHandler)
 
-		v1.GET("/users/:user_id/reservations", middleware.AuthUserMiddleware(), h.GetResvsByUserHandler)
+		v1.GET("/users/:user_id/reservations", middleware.AuthUserMiddleware(), h.GetAllResvsByUserHandler)
 		v1.POST("/users/:user_id/reservations", middleware.AuthUserMiddleware(), h.CreateResvHandler)
-
+		v1.GET("/users/:user_id/reservations/:resv_id", middleware.AuthUserMiddleware(), h.GetResvHandler)
 		v1.POST("/users/:user_id/reservations/:resv_id/signin", middleware.AuthUserMiddleware(), h.SigninHandler)
 		v1.POST("/users/:user_id/reservations/:resv_id/signout", middleware.AuthUserMiddleware(), h.SignoutHandler)
 		v1.POST("/users/:user_id/reservations/:resv_id/cancel", middleware.AuthUserMiddleware(), h.CancelResvHandler)
@@ -65,8 +65,9 @@ func main() {
 		admin.PUT("/users/:user_id", middleware.AuthAdminMiddleware(), h.UpdateUserHandler)
 		admin.DELETE("/users/:user_id", middleware.AuthAdminMiddleware(), h.DeleteUserHandler)
 
-		admin.GET("/users/:user_id/reservations", middleware.AuthAdminMiddleware(), h.GetResvsByUserHandler)
+		admin.GET("/users/:user_id/reservations", middleware.AuthAdminMiddleware(), h.GetAllResvsByUserHandler)
 		admin.POST("/users/:user_id/reservations", middleware.AuthAdminMiddleware(), h.CreateResvHandler)
+		admin.GET("/users/:user_id/reservations/:resv_id", middleware.AuthAdminMiddleware(), h.GetResvHandler)
 		admin.POST("/users/:user_id/reservations/:resv_id/signin", middleware.AuthAdminMiddleware(), h.SigninHandler)
 		admin.POST("/users/:user_id/reservations/:resv_id/signout", middleware.AuthAdminMiddleware(), h.SignoutHandler)
 		admin.POST("/users/:user_id/reservations/:resv_id/cancel", middleware.AuthAdminMiddleware(), h.CancelResvHandler)

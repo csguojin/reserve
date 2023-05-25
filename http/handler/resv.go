@@ -12,7 +12,7 @@ import (
 	"github.com/csguojin/reserve/util/logger"
 )
 
-func (h *HandlerStruct) GetResvsByUserHandler(c *gin.Context) {
+func (h *HandlerStruct) GetAllResvsByUserHandler(c *gin.Context) {
 	userIDStr := c.Param("user_id")
 	if userIDStr == "" {
 		logger.L.Errorln(util.ErrUserIDNil)
@@ -34,6 +34,43 @@ func (h *HandlerStruct) GetResvsByUserHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, &resvs)
+}
+
+func (h *HandlerStruct) GetResvHandler(c *gin.Context) {
+	userIDStr := c.Param("user_id")
+	if userIDStr == "" {
+		logger.L.Errorln(util.ErrUserIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrUserIDNil.Error()})
+		return
+	}
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		logger.L.Errorln(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	resvIDStr := c.Param("resv_id")
+	if resvIDStr == "" {
+		logger.L.Errorln(util.ErrResvIDNil)
+		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrResvIDNil.Error()})
+		return
+	}
+	resvID, err := strconv.Atoi(resvIDStr)
+	if err != nil {
+		logger.L.Errorln(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	resv, err := h.svc.GetResv(resvID)
+	if err != nil || resv.UserID != userID {
+		logger.L.Errorln(err)
+		c.Status(http.StatusBadRequest)
+		return
+	}
+
+	c.JSON(http.StatusOK, resv)
 }
 
 func (h *HandlerStruct) CreateResvHandler(c *gin.Context) {
