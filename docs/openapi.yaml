@@ -1,0 +1,1401 @@
+openapi: 3.0.1
+info:
+  title: reserve
+  description: ''
+  version: 1.0.0
+tags: []
+paths:
+  /api/v1/register:
+    post:
+      summary: /register
+      deprecated: false
+      description: ''
+      tags: []
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserWithPasswordEmail'
+            example:
+              username: user
+              password: pass
+              email: user@user.user
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserWithID'
+  /api/v1/login:
+    post:
+      summary: /login
+      deprecated: false
+      description: ''
+      tags: []
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserWithPassword'
+            example:
+              username: user
+              password: pass
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserWithToken'
+  /api/v1/rooms:
+    get:
+      summary: /rooms
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: page
+          in: query
+          description: ''
+          required: false
+          example: ''
+          schema:
+            type: number
+        - name: per_page
+          in: query
+          description: ''
+          required: false
+          example: ''
+          schema:
+            type: number
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RoomWithID'
+  /api/v1/rooms/{room_id}/seats:
+    get:
+      summary: /rooms/{id}/seats
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: room_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: page
+          in: query
+          description: ''
+          required: false
+          example: ''
+          schema:
+            type: integer
+        - name: per_page
+          in: query
+          description: ''
+          required: false
+          example: ''
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SeatWithID'
+  /api/v1/users/{user_id}/reservations:
+    post:
+      summary: /users/{id}/reservations
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: user_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+            example:
+              user_id: 1
+              seat_id: 1
+              start_time: '2022-02-02T12:00:00+08:00'
+              end_time: '2022-02-02T14:00:00+08:00'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservationWithID'
+    get:
+      summary: /users/{id}/reservations
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: user_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: page
+          in: query
+          description: ''
+          required: false
+          example: ''
+          schema:
+            type: integer
+        - name: per_page
+          in: query
+          description: ''
+          required: false
+          example: ''
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReservationWithID'
+  /api/v1/admin/rooms:
+    post:
+      summary: /admin/rooms
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Room'
+            example:
+              name: roomname
+              capacity: 20
+              opening_time: '10:00'
+              closing_time: '22:00'
+              location: l2
+              description: small
+              status: 0
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserWithID'
+    get:
+      summary: /admin/rooms
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: page
+          in: query
+          description: ''
+          required: false
+          example: ''
+          schema:
+            type: integer
+        - name: per_page
+          in: query
+          description: ''
+          required: false
+          example: ''
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: false
+          example: Bearer xxx
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RoomWithID'
+  /api/v1/admin/rooms/{room_id}/seats:
+    get:
+      summary: /admin/rooms/{id}/seats
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: room_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: page
+          in: query
+          description: ''
+          required: false
+          example: ''
+          schema:
+            type: integer
+        - name: per_page
+          in: query
+          description: ''
+          required: false
+          example: ''
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SeatWithID'
+    post:
+      summary: /admin/rooms/{id}/seats
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: room_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Seat'
+            example: ''
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatWithID'
+  /api/v1/admin/rooms/{room_id}/seats/{seat_id}:
+    put:
+      summary: /admin/rooms/{id}/seats/{id}
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: room_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: seat_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeatWithID'
+            example: ''
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatWithID'
+    delete:
+      summary: /admin/rooms/{id}/seats/{id}
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: room_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: seat_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+    get:
+      summary: /admin/rooms/{id}/seats/{id}
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: room_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: seat_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatWithID'
+  /api/v1/admin/users:
+    get:
+      summary: /admin/users
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: page
+          in: query
+          description: ''
+          required: false
+          example: ''
+          schema:
+            type: integer
+        - name: per_page
+          in: query
+          description: ''
+          required: false
+          example: ''
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserWithID'
+  /api/v1/admin/users/{user_id}:
+    delete:
+      summary: /admin/users/{id}
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: user_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+    get:
+      summary: /admin/users/{id}
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: user_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserWithID'
+    post:
+      summary: /admin/users/{id}
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: user_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserWithPasswordEmail'
+            example:
+              username: user
+              password: pass
+              email: user@user.user
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserWithID'
+  /api/v1/admin/admins:
+    post:
+      summary: /admin/admins
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              name: admin
+              password: pass
+              email: admin@admin.admin
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+    get:
+      summary: /admin/admins
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: page
+          in: query
+          description: ''
+          required: false
+          example: ''
+          schema:
+            type: integer
+        - name: per_page
+          in: query
+          description: ''
+          required: false
+          example: ''
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+  /api/v1/admin/login:
+    post:
+      summary: /admin/login
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              name: admin
+              password: pass
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+  /api/v1/users/{user_id}/reservations/{resv_id}/signin:
+    post:
+      summary: /users/{id}/reservations/{id}/signin
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: user_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: resv_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservationWithID'
+  /api/v1/users/{user_id}/reservations/{resv_id}/signout:
+    post:
+      summary: /users/{id}/reservations/{id}/signout
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: user_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: resv_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservationWithID'
+  /api/v1/users/{user_id}/reservations/{resv_id}/cancel:
+    post:
+      summary: /users/{id}/reservations/{id}/cancel
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: user_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: resv_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservationWithID'
+  /api/v1/users/{user_id}:
+    put:
+      summary: /users/{id}
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: user_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            example:
+              username: username
+              password: pass
+              email: user@user.user
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserWithID'
+  /api/v1/admin/rooms/{room_id}:
+    get:
+      summary: /admin/rooms/{id}
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: room_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomWithID'
+    delete:
+      summary: /admin/rooms/{id}
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: room_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+    put:
+      summary: /admin/rooms/{id}
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: room_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomWithID'
+            example:
+              id: 1
+              name: roomname
+              capacity: 20
+              opening_time: '10:00'
+              closing_time: '22:00'
+              location: l2
+              description: small
+              status: 0
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomWithID'
+  /api/v1/admin/admins/{admin_id}:
+    get:
+      summary: /admin/admins/{id}
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: admin_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+    delete:
+      summary: /admin/admins/{id}
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: admin_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+  /api/v1/admin/users/{user_id}/reservations:
+    get:
+      summary: /admin/users/{id}/reservations
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: user_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: page
+          in: query
+          description: ''
+          required: false
+          example: ''
+          schema:
+            type: integer
+        - name: per_page
+          in: query
+          description: ''
+          required: false
+          example: ''
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReservationWithID'
+    post:
+      summary: /admin/users/{id}/reservations
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: user_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+            example:
+              user_id: 1
+              seat_id: 1
+              start_time: '2022-02-02T12:00:00+08:00'
+              end_time: '2022-02-02T14:00:00+08:00'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservationWithID'
+  /api/v1/admin/users/{user_id}/reservations/{resv_id}/signin:
+    post:
+      summary: /admin/users/{id}/reservations/{id}/signin
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: user_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: resv_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservationWithID'
+    get:
+      summary: /admin/users/{id}/reservations/{id}
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: user_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: resv_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservationWithID'
+  /api/v1/admin/users/{user_id}/reservations/{resv_id}/signout:
+    post:
+      summary: /admin/users/{id}/reservations/{id}/signout
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: user_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: resv_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservationWithID'
+  /api/v1/admin/users/{user_id}/reservations/{resv_id}/cancel:
+    post:
+      summary: /admin/users/{id}/reservations/{id}/cancel
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: user_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: resv_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservationWithID'
+  /api/v1/users/{user_id}/reservations/{resv_id}:
+    get:
+      summary: /users/{id}/reservations/{id}
+      deprecated: false
+      description: ''
+      tags: []
+      parameters:
+        - name: user_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: resv_id
+          in: path
+          description: ''
+          required: true
+          example: '1'
+          schema:
+            type: integer
+        - name: Authorization
+          in: header
+          description: ''
+          required: true
+          example: Bearer xxx
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservationWithID'
+components:
+  schemas:
+    ReservationWithID:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        seat_id:
+          type: integer
+        create_time:
+          type: string
+        start_time:
+          type: string
+        end_time:
+          type: string
+        signin_time:
+          type: string
+          nullable: true
+        signout_time:
+          type: string
+          nullable: true
+        status:
+          type: integer
+      required:
+        - id
+        - user_id
+        - seat_id
+        - create_time
+        - start_time
+        - end_time
+        - status
+    Reservation:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        seat_id:
+          type: integer
+        start_time:
+          type: string
+        end_time:
+          type: string
+      required:
+        - user_id
+        - seat_id
+        - start_time
+        - end_time
+    SeatWithID:
+      type: object
+      properties:
+        id:
+          type: integer
+        room_id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: integer
+      required:
+        - id
+        - room_id
+    Seat:
+      type: object
+      properties:
+        room_id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          type: integer
+      required:
+        - room_id
+    RoomWithID:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        capacity:
+          type: integer
+        opening_time:
+          type: string
+        closing_time:
+          type: string
+        location:
+          type: string
+        description:
+          type: string
+        status:
+          type: integer
+      required:
+        - id
+        - name
+        - capacity
+        - opening_time
+        - closing_time
+        - location
+        - description
+        - status
+    Room:
+      type: object
+      properties:
+        name:
+          type: string
+        capacity:
+          type: integer
+        opening_time:
+          type: string
+        closing_time:
+          type: string
+        location:
+          type: string
+        description:
+          type: string
+        status:
+          type: integer
+      required:
+        - closing_time
+        - opening_time
+    UserWithPasswordEmail:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        emai:
+          type: string
+      required:
+        - username
+        - password
+        - emai
+    UserWithID:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+      required:
+        - username
+        - email
+        - id
+    UserWithToken:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        token:
+          type: string
+      required:
+        - username
+        - token
+        - id
+    UserWithPassword:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+      required:
+        - username
+        - email

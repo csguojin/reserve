@@ -28,3 +28,7 @@ If you are using Docker, you can build the Docker image for the project:
 docker build -t reserve:latest .
 docker run -p 8080:8080 reserve:latest
 ```
+
+## API
+
+View the RESTful APIs of this project in [Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/csguojin/reserve/main/docs/openapi.yaml).
