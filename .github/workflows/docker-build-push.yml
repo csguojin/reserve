@@ -52,9 +52,9 @@ jobs:
       - name: Setup Docker buildx
         uses: docker/setup-buildx-action@79abd3f86f79a9d68a23c75a09a9a85889262adf
         with:
-          platforms:
-            - linux/amd64
-            - linux/arm64
+          platforms: |
+            linux/amd64
+            linux/arm64
 
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
@@ -88,6 +88,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          platforms:
-            - linux/amd64
-            - linux/arm64
+          platforms: |
+            linux/amd64
+            linux/arm64
