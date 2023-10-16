@@ -2,8 +2,9 @@ FROM golang:1.19 AS builder
 
 WORKDIR /app
 
-RUN go env -w GO111MODULE=on
-RUN go env -w GOPROXY=https://goproxy.cn,https://mirrors.aliyun.com/goproxy,direct
+ARG GOPROXY=https://goproxy.cn,https://mirrors.aliyun.com/goproxy,direct
+
+RUN go env -w GOPROXY=$GOPROXY
 
 COPY . .
 
