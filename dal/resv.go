@@ -4,6 +4,8 @@ import (
 	"errors"
 	"time"
 
+	"gorm.io/gorm/clause"
+
 	"github.com/csguojin/reserve/model"
 	"github.com/csguojin/reserve/util"
 	"github.com/csguojin/reserve/util/logger"
@@ -18,6 +20,7 @@ func (d *dal) CreateResv(resv *model.Resv) (*model.Resv, error) {
 
 	var seat model.Seat
 	if err := tx.
+		Clauses(clause.Locking{Strength: "SHARE"}).
 		Where("id = ?", resv.SeatID).
 		Where("status = ?", 0).
 		First(&seat).Error; err != nil {
@@ -35,6 +38,7 @@ func (d *dal) CreateResv(resv *model.Resv) (*model.Resv, error) {
 
 	var room *model.Room
 	if err := tx.
+		Clauses(clause.Locking{Strength: "SHARE"}).
 		Where("id = ?", seat.RoomID).
 		Where("status = ?", 0).
 		First(&room).Error; err != nil {
@@ -52,6 +56,7 @@ func (d *dal) CreateResv(resv *model.Resv) (*model.Resv, error) {
 
 	var existingResvCount int64
 	if err := tx.
+		Clauses(clause.Locking{Strength: "UPDATE"}).
 		Model(&model.Resv{}).
 		Where("seat_id = ?", resv.SeatID).
 		Where("status = ?", 0).
@@ -70,6 +75,7 @@ func (d *dal) CreateResv(resv *model.Resv) (*model.Resv, error) {
 
 	existingResvCount = 0
 	if err := tx.
+		Clauses(clause.Locking{Strength: "UPDATE"}).
 		Model(&model.Resv{}).
 		Where("user_id = ?", resv.UserID).
 		Where("status = ?", 0).
@@ -98,6 +104,7 @@ func (d *dal) CreateResv(resv *model.Resv) (*model.Resv, error) {
 
 	err := tx.Commit().Error
 	if err != nil {
+		tx.Rollback()
 		logger.L.Errorln(err)
 		return nil, err
 	}
@@ -144,7 +151,7 @@ func (d *dal) UpdateResvStatus(resv *model.Resv) (*model.Resv, error) {
 	return d.GetResv(resv.ID)
 }
 
-func (d *dal) updateResvTime(newResv *model.Resv) (*model.Resv, error) {
+func (d *dal) UpdateResvStartEndTime(newResv *model.Resv) (*model.Resv, error) {
 	tx := d.db.Begin()
 	if tx.Error != nil {
 		logger.L.Errorln(tx.Error)
@@ -152,7 +159,9 @@ func (d *dal) updateResvTime(newResv *model.Resv) (*model.Resv, error) {
 	}
 
 	oldResv := &model.Resv{ID: newResv.ID}
-	err := d.db.First(&oldResv, newResv.ID).Error
+	err := tx.
+		Clauses(clause.Locking{Strength: "UPDATE"}).
+		First(&oldResv, newResv.ID).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		tx.Rollback()
@@ -175,6 +184,7 @@ func (d *dal) updateResvTime(newResv *model.Resv) (*model.Resv, error) {
 
 	var existingResvCount int64
 	if err := tx.
+		Clauses(clause.Locking{Strength: "UPDATE"}).
 		Model(&model.Resv{}).
 		Where("seat_id = ?", newResv.SeatID).
 		Where("id != ?", newResv.ID).
@@ -194,6 +204,7 @@ func (d *dal) updateResvTime(newResv *model.Resv) (*model.Resv, error) {
 
 	existingResvCount = 0
 	if err := tx.
+		Clauses(clause.Locking{Strength: "UPDATE"}).
 		Model(&model.Resv{}).
 		Where("user_id = ?", newResv.UserID).
 		Where("id != ?", newResv.ID).
@@ -211,7 +222,7 @@ func (d *dal) updateResvTime(newResv *model.Resv) (*model.Resv, error) {
 		return nil, util.ErrResvUserTimeConflict
 	}
 
-	err = d.db.Model(&model.Resv{}).Where("id = ?", newResv.ID).Updates(
+	err = tx.Model(&model.Resv{}).Where("id = ?", newResv.ID).Updates(
 		&model.Resv{
 			StartTime: newResv.StartTime,
 			EndTime:   newResv.EndTime,
@@ -224,6 +235,7 @@ func (d *dal) updateResvTime(newResv *model.Resv) (*model.Resv, error) {
 
 	err = tx.Commit().Error
 	if err != nil {
+		tx.Rollback()
 		logger.L.Errorln(err)
 		return nil, err
 	}
