@@ -2,7 +2,9 @@ package dal
 
 import (
 	"sync"
+	"time"
 
+	"github.com/redis/go-redis/v9"
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -11,14 +13,18 @@ import (
 	"github.com/csguojin/reserve/model"
 )
 
-func GetDB() *gorm.DB {
+func GetDB() (*gorm.DB, *redis.Client) {
 	onceDB.Do(createDB)
-	return DB
+	onceRDB.Do(createRDB)
+	return DB, RDB
 }
 
 var (
 	DB     *gorm.DB
 	onceDB sync.Once
+
+	RDB     *redis.Client
+	onceRDB sync.Once
 )
 
 func createDB() {
@@ -62,3 +68,16 @@ func createDB() {
 
 	DB = db
 }
+
+func createRDB() {
+	rdb := redis.NewClient(&redis.Options{
+		Addr: viper.GetString("db.redis.host") + ":" + viper.GetString("db.redis.port"),
+		DB:   0,
+	})
+
+	RDB = rdb
+}
+
+const (
+	redisTTL = time.Hour
+)

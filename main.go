@@ -15,8 +15,8 @@ import (
 func main() {
 	defer logger.L.Sync()
 
-	db := dal.GetDB()
-	dalClient := dal.GetDal(db)
+	db, rdb := dal.GetDB()
+	dalClient := dal.GetDal(db, rdb)
 	svc := service.NewService(dalClient)
 	h := handler.NewHandler(svc)
 

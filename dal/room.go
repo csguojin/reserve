@@ -2,6 +2,8 @@ package dal
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 
 	"github.com/csguojin/reserve/model"
 	"github.com/csguojin/reserve/util"
@@ -25,16 +27,48 @@ func (d *dal) CreateRoom(ctx context.Context, room *model.Room) (*model.Room, er
 		logger.L.Errorln(err)
 		return nil, err
 	}
-	return d.GetRoom(ctx, room.ID)
+
+	data, err := json.Marshal(room)
+	if err != nil {
+		logger.L.Warnln(err)
+		return room, nil
+	}
+	roomCacheKey := fmt.Sprintf("%s%d", "room:", room.ID)
+	err = d.rdb.Set(ctx, roomCacheKey, data, redisTTL).Err()
+	if err != nil {
+		logger.L.Warnln(err)
+	}
+	return room, nil
 }
 
 func (d *dal) GetRoom(ctx context.Context, id int) (*model.Room, error) {
+	roomCacheKey := fmt.Sprintf("%s%d", "room:", id)
+	roomJSON, err := d.rdb.Get(ctx, roomCacheKey).Result()
+	if err == nil {
+		var room *model.Room
+		err := json.Unmarshal([]byte(roomJSON), &room)
+		if err == nil {
+			return room, nil
+		}
+	}
+
 	room := &model.Room{ID: id}
-	err := d.db.First(&room, id).Error
+	err = d.db.First(&room, id).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, util.ErrRoomNotFound
 	}
+
+	data, err := json.Marshal(room)
+	if err != nil {
+		logger.L.Warnln(err)
+		return room, nil
+	}
+	err = d.rdb.Set(ctx, roomCacheKey, data, redisTTL).Err()
+	if err != nil {
+		logger.L.Warnln(err)
+	}
+
 	return room, nil
 }
 
@@ -44,11 +78,25 @@ func (d *dal) UpdateRoom(ctx context.Context, room *model.Room) (*model.Room, er
 		logger.L.Errorln(err)
 		return nil, err
 	}
-	return d.GetRoom(ctx, room.ID)
+
+	roomCacheKey := fmt.Sprintf("%s%d", "room:", room.ID)
+	err = d.rdb.Del(ctx, roomCacheKey).Err()
+	if err != nil {
+		logger.L.Errorln(err)
+		return room, err
+	}
+	return room, nil
 }
 
 func (d *dal) DeleteRoom(ctx context.Context, roomID int) error {
 	err := d.db.Delete(&model.Room{}, roomID).Error
+	if err != nil {
+		logger.L.Errorln(err)
+		return err
+	}
+
+	roomCacheKey := fmt.Sprintf("%s%d", "room:", roomID)
+	err = d.rdb.Del(ctx, roomCacheKey).Err()
 	if err != nil {
 		logger.L.Errorln(err)
 		return err

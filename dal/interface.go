@@ -3,6 +3,7 @@ package dal
 import (
 	"context"
 
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 
 	"github.com/csguojin/reserve/model"
@@ -43,10 +44,14 @@ type Dal interface {
 	DeleteAdmin(ctx context.Context, adminID int) error
 }
 
-func GetDal(db *gorm.DB) Dal {
-	return &dal{db: db}
+func GetDal(db *gorm.DB, rdb *redis.Client) Dal {
+	return &dal{
+		db:  db,
+		rdb: rdb,
+	}
 }
 
 type dal struct {
-	db *gorm.DB
+	db  *gorm.DB
+	rdb *redis.Client
 }
