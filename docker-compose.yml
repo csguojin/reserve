@@ -10,15 +10,19 @@ services:
     depends_on:
       reserve_mysql:
         condition: service_healthy
+      reserve_redis:
+        condition: service_started
     environment:
       - MYSQL_HOST=reserve_mysql
       - MYSQL_PORT=3306
       - MYSQL_USERNAME=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - REDIS_HOST=reserve_redis
+      - REDIS_PORT=6379
 
   reserve_mysql:
-    image: mysql:latest
+    image: mysql:8
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -41,7 +45,12 @@ services:
       retries: 5
       start_period: 10s
     volumes:
-      - reserve_data:/var/lib/mysql
+      - reserve_mysql_data:/var/lib/mysql
+
+  reserve_redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
 
 volumes:
-  reserve_data:
+  reserve_mysql_data:
