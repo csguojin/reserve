@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  reserve_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      reserve_mysql:
+        condition: service_healthy
+    environment:
+      - MYSQL_HOST=reserve_mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USERNAME=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+
+  reserve_mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          'mysqladmin',
+          'ping',
+          '-h',
+          'localhost',
+          '-u',
+          'root',
+          '-p$$MYSQL_ROOT_PASSWORD'
+        ]
+      interval: 6s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    volumes:
+      - reserve_data:/var/lib/mysql
+
+volumes:
+  reserve_data:
