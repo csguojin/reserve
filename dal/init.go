@@ -11,9 +11,14 @@ import (
 	"github.com/csguojin/reserve/model"
 )
 
+func GetDB() *gorm.DB {
+	onceDB.Do(createDB)
+	return DB
+}
+
 var (
-	DB   *gorm.DB
-	once sync.Once
+	DB     *gorm.DB
+	onceDB sync.Once
 )
 
 func createDB() {
@@ -56,9 +61,4 @@ func createDB() {
 	}
 
 	DB = db
-}
-
-func GetDB() *gorm.DB {
-	once.Do(createDB)
-	return DB
 }

@@ -26,7 +26,7 @@ func (h *HandlerStruct) GetAllResvsByUserHandler(c *gin.Context) {
 		return
 	}
 
-	resvs, err := h.svc.GetResvsByUser(userID, parsePager(c))
+	resvs, err := h.svc.GetResvsByUser(c.Request.Context(), userID, parsePager(c))
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -63,7 +63,7 @@ func (h *HandlerStruct) GetResvHandler(c *gin.Context) {
 		return
 	}
 
-	resv, err := h.svc.GetResv(resvID)
+	resv, err := h.svc.GetResv(c.Request.Context(), resvID)
 	if err != nil || resv.UserID != userID {
 		logger.L.Errorln(err)
 		c.Status(http.StatusBadRequest)
@@ -114,7 +114,7 @@ func (h *HandlerStruct) CreateResvHandler(c *gin.Context) {
 	resv.UserID = userID
 	resv.Status = 0
 
-	resv, err = h.svc.CreateResv(resv)
+	resv, err = h.svc.CreateResv(c.Request.Context(), resv)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -151,7 +151,7 @@ func (h *HandlerStruct) SigninHandler(c *gin.Context) {
 		return
 	}
 
-	resv, err := h.svc.Signin(resvID, userID)
+	resv, err := h.svc.Signin(c.Request.Context(), resvID, userID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -188,7 +188,7 @@ func (h *HandlerStruct) SignoutHandler(c *gin.Context) {
 		return
 	}
 
-	resv, err := h.svc.Signout(resvID, userID)
+	resv, err := h.svc.Signout(c.Request.Context(), resvID, userID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -225,7 +225,7 @@ func (h *HandlerStruct) CancelResvHandler(c *gin.Context) {
 		return
 	}
 
-	resv, err := h.svc.CancelResv(resvID, userID)
+	resv, err := h.svc.CancelResv(c.Request.Context(), resvID, userID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

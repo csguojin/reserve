@@ -25,7 +25,7 @@ func (h *HandlerStruct) RegisterHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	user, err = h.svc.CreateUser(user)
+	user, err = h.svc.CreateUser(c.Request.Context(), user)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -55,7 +55,7 @@ func (h *HandlerStruct) LoginHandler(c *gin.Context) {
 		return
 	}
 
-	user, err = h.svc.CheckUser(user.Username, user.Password)
+	user, err = h.svc.CheckUser(c.Request.Context(), user.Username, user.Password)
 	if err != nil {
 		logger.L.Errorln(err)
 		switch err {
@@ -69,7 +69,7 @@ func (h *HandlerStruct) LoginHandler(c *gin.Context) {
 		return
 	}
 
-	token, err := h.svc.GenerateToken(user)
+	token, err := h.svc.GenerateToken(c.Request.Context(), user)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -86,7 +86,7 @@ func (h *HandlerStruct) LoginHandler(c *gin.Context) {
 }
 
 func (h *HandlerStruct) GetAllUsersHandler(c *gin.Context) {
-	users, err := h.svc.GetAllUsers(parsePager(c))
+	users, err := h.svc.GetAllUsers(c.Request.Context(), parsePager(c))
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, nil)
@@ -119,7 +119,7 @@ func (h *HandlerStruct) GetUserHandler(c *gin.Context) {
 		return
 	}
 
-	user, err := h.svc.GetUser(userID)
+	user, err := h.svc.GetUser(c.Request.Context(), userID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, nil)
@@ -158,7 +158,7 @@ func (h *HandlerStruct) UpdateUserHandler(c *gin.Context) {
 
 	user.ID = userID
 
-	user, err = h.svc.UpdateUser(user)
+	user, err = h.svc.UpdateUser(c.Request.Context(), user)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -188,7 +188,7 @@ func (h *HandlerStruct) DeleteUserHandler(c *gin.Context) {
 		return
 	}
 
-	err = h.svc.DeleteUser(userID)
+	err = h.svc.DeleteUser(c.Request.Context(), userID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

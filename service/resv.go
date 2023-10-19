@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"errors"
 	"time"
 
@@ -9,8 +10,8 @@ import (
 	"github.com/csguojin/reserve/util/logger"
 )
 
-func (s *svc) CreateResv(resv *model.Resv) (*model.Resv, error) {
-	resv, err := s.dal.CreateResv(resv)
+func (s *svc) CreateResv(ctx context.Context, resv *model.Resv) (*model.Resv, error) {
+	resv, err := s.dal.CreateResv(ctx, resv)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -18,8 +19,8 @@ func (s *svc) CreateResv(resv *model.Resv) (*model.Resv, error) {
 	return resv, nil
 }
 
-func (s *svc) GetResv(resvID int) (*model.Resv, error) {
-	resv, err := s.dal.GetResv(resvID)
+func (s *svc) GetResv(ctx context.Context, resvID int) (*model.Resv, error) {
+	resv, err := s.dal.GetResv(ctx, resvID)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -27,8 +28,8 @@ func (s *svc) GetResv(resvID int) (*model.Resv, error) {
 	return resv, nil
 }
 
-func (s *svc) UpdateResvStatus(resv *model.Resv) (*model.Resv, error) {
-	resv, err := s.dal.UpdateResvStatus(resv)
+func (s *svc) UpdateResvStatus(ctx context.Context, resv *model.Resv) (*model.Resv, error) {
+	resv, err := s.dal.UpdateResvStatus(ctx, resv)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -36,8 +37,8 @@ func (s *svc) UpdateResvStatus(resv *model.Resv) (*model.Resv, error) {
 	return resv, nil
 }
 
-func (s *svc) GetResvsByUser(userID int, pager *model.Pager) ([]*model.Resv, error) {
-	resv, err := s.dal.GetResvsByUser(userID, pager)
+func (s *svc) GetResvsByUser(ctx context.Context, userID int, pager *model.Pager) ([]*model.Resv, error) {
+	resv, err := s.dal.GetResvsByUser(ctx, userID, pager)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -45,8 +46,8 @@ func (s *svc) GetResvsByUser(userID int, pager *model.Pager) ([]*model.Resv, err
 	return resv, nil
 }
 
-func (s *svc) GetResvsBySeat(seatID int, pager *model.Pager) ([]*model.Resv, error) {
-	resv, err := s.dal.GetResvsBySeat(seatID, pager)
+func (s *svc) GetResvsBySeat(ctx context.Context, seatID int, pager *model.Pager) ([]*model.Resv, error) {
+	resv, err := s.dal.GetResvsBySeat(ctx, seatID, pager)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -54,8 +55,8 @@ func (s *svc) GetResvsBySeat(seatID int, pager *model.Pager) ([]*model.Resv, err
 	return resv, nil
 }
 
-func (s *svc) Signin(resvID int, userID int) (*model.Resv, error) {
-	resv, err := s.dal.GetResv(resvID)
+func (s *svc) Signin(ctx context.Context, resvID int, userID int) (*model.Resv, error) {
+	resv, err := s.dal.GetResv(ctx, resvID)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -87,7 +88,7 @@ func (s *svc) Signin(resvID int, userID int) (*model.Resv, error) {
 
 	resv.SigninTime = &now
 
-	resv, err = s.dal.UpdateResvStatus(resv)
+	resv, err = s.dal.UpdateResvStatus(ctx, resv)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -95,8 +96,8 @@ func (s *svc) Signin(resvID int, userID int) (*model.Resv, error) {
 	return resv, nil
 }
 
-func (s *svc) Signout(resvID int, userID int) (*model.Resv, error) {
-	resv, err := s.dal.GetResv(resvID)
+func (s *svc) Signout(ctx context.Context, resvID int, userID int) (*model.Resv, error) {
+	resv, err := s.dal.GetResv(ctx, resvID)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -116,7 +117,7 @@ func (s *svc) Signout(resvID int, userID int) (*model.Resv, error) {
 	now := time.Now()
 	resv.SignoutTime = &now
 
-	resv, err = s.dal.UpdateResvStatus(resv)
+	resv, err = s.dal.UpdateResvStatus(ctx, resv)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -131,8 +132,8 @@ func (s *svc) Signout(resvID int, userID int) (*model.Resv, error) {
 	return resv, nil
 }
 
-func (s *svc) CancelResv(resvID int, userID int) (*model.Resv, error) {
-	resv, err := s.dal.GetResv(resvID)
+func (s *svc) CancelResv(ctx context.Context, resvID int, userID int) (*model.Resv, error) {
+	resv, err := s.dal.GetResv(ctx, resvID)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -145,7 +146,7 @@ func (s *svc) CancelResv(resvID int, userID int) (*model.Resv, error) {
 
 	resv.Status = 1
 
-	resv, err = s.dal.UpdateResvStatus(resv)
+	resv, err = s.dal.UpdateResvStatus(ctx, resv)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err

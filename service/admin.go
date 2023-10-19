@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"strconv"
 	"time"
 
@@ -13,14 +14,14 @@ import (
 	"github.com/csguojin/reserve/util/logger"
 )
 
-func (s *svc) CreateAdmin(admin *model.Admin) (*model.Admin, error) {
-	encryedPwd, err := encryptPassword(admin.Password)
+func (s *svc) CreateAdmin(ctx context.Context, admin *model.Admin) (*model.Admin, error) {
+	encryedPwd, err := encryptPassword(ctx, admin.Password)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
 	}
 	admin.Password = encryedPwd
-	admin, err = s.dal.CeateAdmin(admin)
+	admin, err = s.dal.CeateAdmin(ctx, admin)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -28,13 +29,13 @@ func (s *svc) CreateAdmin(admin *model.Admin) (*model.Admin, error) {
 	return admin, nil
 }
 
-func (s *svc) CheckAdmin(adminname string, password string) (*model.Admin, error) {
-	admin, err := s.dal.GetAdminWithPasswordByName(adminname)
+func (s *svc) CheckAdmin(ctx context.Context, adminname string, password string) (*model.Admin, error) {
+	admin, err := s.dal.GetAdminWithPasswordByName(ctx, adminname)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
 	}
-	err = verifyAdminPassword(password, admin.Password)
+	err = verifyAdminPassword(ctx, password, admin.Password)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, util.ErrAdminAuthFail
@@ -42,7 +43,7 @@ func (s *svc) CheckAdmin(adminname string, password string) (*model.Admin, error
 	return admin, nil
 }
 
-func (s *svc) GenerateAdminToken(admin *model.Admin) (string, error) {
+func (s *svc) GenerateAdminToken(ctx context.Context, admin *model.Admin) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"exp": time.Now().Add(time.Hour).Unix(),
 
@@ -58,8 +59,8 @@ func (s *svc) GenerateAdminToken(admin *model.Admin) (string, error) {
 	return tokenStr, nil
 }
 
-func (s *svc) GetAllAdmins(pager *model.Pager) ([]*model.Admin, error) {
-	admins, err := s.dal.GetAllAdmins(pager)
+func (s *svc) GetAllAdmins(ctx context.Context, pager *model.Pager) ([]*model.Admin, error) {
+	admins, err := s.dal.GetAllAdmins(ctx, pager)
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -67,8 +68,8 @@ func (s *svc) GetAllAdmins(pager *model.Pager) ([]*model.Admin, error) {
 	return admins, nil
 }
 
-func (s *svc) GetAdminNoPassword(adminID int) (*model.Admin, error) {
-	admin, err := s.dal.GetAdmin(adminID)
+func (s *svc) GetAdminNoPassword(ctx context.Context, adminID int) (*model.Admin, error) {
+	admin, err := s.dal.GetAdmin(ctx, adminID)
 	admin.Password = ""
 	if err != nil {
 		logger.L.Errorln(err)
@@ -77,8 +78,8 @@ func (s *svc) GetAdminNoPassword(adminID int) (*model.Admin, error) {
 	return admin, nil
 }
 
-func (s *svc) DeleteAdmin(adminID int) error {
-	err := s.dal.DeleteAdmin(adminID)
+func (s *svc) DeleteAdmin(ctx context.Context, adminID int) error {
+	err := s.dal.DeleteAdmin(ctx, adminID)
 	if err != nil {
 		logger.L.Errorln(err)
 		return err
@@ -86,6 +87,6 @@ func (s *svc) DeleteAdmin(adminID int) error {
 	return nil
 }
 
-func verifyAdminPassword(password, hashedPassword string) error {
+func verifyAdminPassword(ctx context.Context, password, hashedPassword string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }

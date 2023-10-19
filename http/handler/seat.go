@@ -24,7 +24,7 @@ func (h *HandlerStruct) GetAllSeatsHandler(c *gin.Context) {
 		return
 	}
 
-	seats, err := h.svc.GetAllSeats(roomID, parsePager(c))
+	seats, err := h.svc.GetAllSeats(c.Request.Context(), roomID, parsePager(c))
 	if err != nil {
 		logger.L.Errorln(err)
 		switch err {
@@ -62,7 +62,7 @@ func (h *HandlerStruct) CreateSeatHandler(c *gin.Context) {
 	}
 	seat.ID = 0
 	seat.RoomID = roomID
-	seat, err = h.svc.CreateSeat(seat)
+	seat, err = h.svc.CreateSeat(c.Request.Context(), seat)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -85,7 +85,7 @@ func (h *HandlerStruct) GetSeatHandler(c *gin.Context) {
 		return
 	}
 
-	seat, err := h.svc.GetSeat(seatID)
+	seat, err := h.svc.GetSeat(c.Request.Context(), seatID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -116,7 +116,7 @@ func (h *HandlerStruct) UpdateSeatHandler(c *gin.Context) {
 		return
 	}
 	seat.ID = seatID
-	seat, err = h.svc.UpdateSeat(seat)
+	seat, err = h.svc.UpdateSeat(c.Request.Context(), seat)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -139,7 +139,7 @@ func (h *HandlerStruct) DeleteSeatHandler(c *gin.Context) {
 		return
 	}
 
-	err = h.svc.DeleteSeat(seatID)
+	err = h.svc.DeleteSeat(c.Request.Context(), seatID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

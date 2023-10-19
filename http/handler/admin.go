@@ -25,7 +25,7 @@ func (h *HandlerStruct) CreateAdminHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	admin, err = h.svc.CreateAdmin(admin)
+	admin, err = h.svc.CreateAdmin(c.Request.Context(), admin)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -55,7 +55,7 @@ func (h *HandlerStruct) AdminLoginHandler(c *gin.Context) {
 		return
 	}
 
-	admin, err = h.svc.CheckAdmin(admin.Name, admin.Password)
+	admin, err = h.svc.CheckAdmin(c.Request.Context(), admin.Name, admin.Password)
 	if err != nil {
 		logger.L.Errorln(err)
 		switch err {
@@ -69,7 +69,7 @@ func (h *HandlerStruct) AdminLoginHandler(c *gin.Context) {
 		return
 	}
 
-	token, err := h.svc.GenerateAdminToken(admin)
+	token, err := h.svc.GenerateAdminToken(c.Request.Context(), admin)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -86,7 +86,7 @@ func (h *HandlerStruct) AdminLoginHandler(c *gin.Context) {
 }
 
 func (h *HandlerStruct) GetAllAdminsHandler(c *gin.Context) {
-	admins, err := h.svc.GetAllAdmins(parsePager(c))
+	admins, err := h.svc.GetAllAdmins(c.Request.Context(), parsePager(c))
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, nil)
@@ -119,7 +119,7 @@ func (h *HandlerStruct) GetAdminHandler(c *gin.Context) {
 		return
 	}
 
-	admin, err := h.svc.GetAdminNoPassword(adminID)
+	admin, err := h.svc.GetAdminNoPassword(c.Request.Context(), adminID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, nil)
@@ -149,7 +149,7 @@ func (h *HandlerStruct) DeleteAdminHandler(c *gin.Context) {
 		return
 	}
 
-	err = h.svc.DeleteAdmin(adminID)
+	err = h.svc.DeleteAdmin(c.Request.Context(), adminID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

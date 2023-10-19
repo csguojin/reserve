@@ -1,6 +1,7 @@
 package handler_test
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -48,7 +49,7 @@ func TestHandlerStruct_GetAllRoomsHandler(t *testing.T) {
 		},
 	}
 
-	mockDAL.EXPECT().GetAllRooms(&model.Pager{Page: 1, PerPage: 3}).Return(expectedRooms, nil).Times(1)
+	mockDAL.EXPECT().GetAllRooms(context.Background(), &model.Pager{Page: 1, PerPage: 3}).Return(expectedRooms, nil).Times(1)
 
 	req, err := http.NewRequest("GET", "/rooms?page=1&per_page=3", nil)
 	assert.NoError(t, err)

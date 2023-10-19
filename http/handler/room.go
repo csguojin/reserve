@@ -12,7 +12,7 @@ import (
 )
 
 func (h *HandlerStruct) GetAllRoomsHandler(c *gin.Context) {
-	rooms, err := h.svc.GetAllRooms(parsePager(c))
+	rooms, err := h.svc.GetAllRooms(c.Request.Context(), parsePager(c))
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, nil)
@@ -31,7 +31,7 @@ func (h *HandlerStruct) CreateRoomHandler(c *gin.Context) {
 		return
 	}
 	room.ID = 0
-	room, err = h.svc.CreateRoom(room)
+	room, err = h.svc.CreateRoom(c.Request.Context(), room)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -54,7 +54,7 @@ func (h *HandlerStruct) GetRoomHandler(c *gin.Context) {
 		return
 	}
 
-	room, err := h.svc.GetRoom(roomID)
+	room, err := h.svc.GetRoom(c.Request.Context(), roomID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -85,7 +85,7 @@ func (h *HandlerStruct) UpdateRoomHandler(c *gin.Context) {
 		return
 	}
 	room.ID = roomID
-	room, err = h.svc.UpdateRoom(room)
+	room, err = h.svc.UpdateRoom(c.Request.Context(), room)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -108,7 +108,7 @@ func (h *HandlerStruct) DeleteRoomHandler(c *gin.Context) {
 		return
 	}
 
-	err = h.svc.DeleteRoom(roomID)
+	err = h.svc.DeleteRoom(c.Request.Context(), roomID)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

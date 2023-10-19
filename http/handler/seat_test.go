@@ -1,6 +1,7 @@
 package handler_test
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -50,7 +51,7 @@ func TestHandlerStruct_GetAllSeatsHandler(t *testing.T) {
 		},
 	}
 
-	mockDAL.EXPECT().GetAllSeats(roomID, &model.Pager{Page: 1, PerPage: 3}).Return(seats, nil).Times(1)
+	mockDAL.EXPECT().GetAllSeats(context.Background(), roomID, &model.Pager{Page: 1, PerPage: 3}).Return(seats, nil).Times(1)
 
 	req, err := http.NewRequest("GET", "/rooms/1/seats?page=1&per_page=3", nil)
 	assert.NoError(t, err)

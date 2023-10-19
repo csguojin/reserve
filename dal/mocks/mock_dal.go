@@ -5,6 +5,7 @@
 package mocks
 
 import (
+	context "context"
 	reflect "reflect"
 
 	model "github.com/csguojin/reserve/model"
@@ -35,417 +36,417 @@ func (m *MockDal) EXPECT() *MockDalMockRecorder {
 }
 
 // CeateAdmin mocks base method.
-func (m *MockDal) CeateAdmin(admin *model.Admin) (*model.Admin, error) {
+func (m *MockDal) CeateAdmin(ctx context.Context, admin *model.Admin) (*model.Admin, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CeateAdmin", admin)
+	ret := m.ctrl.Call(m, "CeateAdmin", ctx, admin)
 	ret0, _ := ret[0].(*model.Admin)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CeateAdmin indicates an expected call of CeateAdmin.
-func (mr *MockDalMockRecorder) CeateAdmin(admin interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) CeateAdmin(ctx, admin interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CeateAdmin", reflect.TypeOf((*MockDal)(nil).CeateAdmin), admin)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CeateAdmin", reflect.TypeOf((*MockDal)(nil).CeateAdmin), ctx, admin)
 }
 
 // CeateUser mocks base method.
-func (m *MockDal) CeateUser(user *model.User) (*model.User, error) {
+func (m *MockDal) CeateUser(ctx context.Context, user *model.User) (*model.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CeateUser", user)
+	ret := m.ctrl.Call(m, "CeateUser", ctx, user)
 	ret0, _ := ret[0].(*model.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CeateUser indicates an expected call of CeateUser.
-func (mr *MockDalMockRecorder) CeateUser(user interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) CeateUser(ctx, user interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CeateUser", reflect.TypeOf((*MockDal)(nil).CeateUser), user)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CeateUser", reflect.TypeOf((*MockDal)(nil).CeateUser), ctx, user)
 }
 
 // CreateResv mocks base method.
-func (m *MockDal) CreateResv(resv *model.Resv) (*model.Resv, error) {
+func (m *MockDal) CreateResv(ctx context.Context, resv *model.Resv) (*model.Resv, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateResv", resv)
+	ret := m.ctrl.Call(m, "CreateResv", ctx, resv)
 	ret0, _ := ret[0].(*model.Resv)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateResv indicates an expected call of CreateResv.
-func (mr *MockDalMockRecorder) CreateResv(resv interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) CreateResv(ctx, resv interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateResv", reflect.TypeOf((*MockDal)(nil).CreateResv), resv)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateResv", reflect.TypeOf((*MockDal)(nil).CreateResv), ctx, resv)
 }
 
 // CreateRoom mocks base method.
-func (m *MockDal) CreateRoom(room *model.Room) (*model.Room, error) {
+func (m *MockDal) CreateRoom(ctx context.Context, room *model.Room) (*model.Room, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateRoom", room)
+	ret := m.ctrl.Call(m, "CreateRoom", ctx, room)
 	ret0, _ := ret[0].(*model.Room)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateRoom indicates an expected call of CreateRoom.
-func (mr *MockDalMockRecorder) CreateRoom(room interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) CreateRoom(ctx, room interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateRoom", reflect.TypeOf((*MockDal)(nil).CreateRoom), room)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateRoom", reflect.TypeOf((*MockDal)(nil).CreateRoom), ctx, room)
 }
 
 // CreateSeat mocks base method.
-func (m *MockDal) CreateSeat(seat *model.Seat) (*model.Seat, error) {
+func (m *MockDal) CreateSeat(ctx context.Context, seat *model.Seat) (*model.Seat, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateSeat", seat)
+	ret := m.ctrl.Call(m, "CreateSeat", ctx, seat)
 	ret0, _ := ret[0].(*model.Seat)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateSeat indicates an expected call of CreateSeat.
-func (mr *MockDalMockRecorder) CreateSeat(seat interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) CreateSeat(ctx, seat interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSeat", reflect.TypeOf((*MockDal)(nil).CreateSeat), seat)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSeat", reflect.TypeOf((*MockDal)(nil).CreateSeat), ctx, seat)
 }
 
 // DeleteAdmin mocks base method.
-func (m *MockDal) DeleteAdmin(adminID int) error {
+func (m *MockDal) DeleteAdmin(ctx context.Context, adminID int) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteAdmin", adminID)
+	ret := m.ctrl.Call(m, "DeleteAdmin", ctx, adminID)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // DeleteAdmin indicates an expected call of DeleteAdmin.
-func (mr *MockDalMockRecorder) DeleteAdmin(adminID interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) DeleteAdmin(ctx, adminID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteAdmin", reflect.TypeOf((*MockDal)(nil).DeleteAdmin), adminID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteAdmin", reflect.TypeOf((*MockDal)(nil).DeleteAdmin), ctx, adminID)
 }
 
 // DeleteRoom mocks base method.
-func (m *MockDal) DeleteRoom(roomID int) error {
+func (m *MockDal) DeleteRoom(ctx context.Context, roomID int) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteRoom", roomID)
+	ret := m.ctrl.Call(m, "DeleteRoom", ctx, roomID)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // DeleteRoom indicates an expected call of DeleteRoom.
-func (mr *MockDalMockRecorder) DeleteRoom(roomID interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) DeleteRoom(ctx, roomID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteRoom", reflect.TypeOf((*MockDal)(nil).DeleteRoom), roomID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteRoom", reflect.TypeOf((*MockDal)(nil).DeleteRoom), ctx, roomID)
 }
 
 // DeleteSeat mocks base method.
-func (m *MockDal) DeleteSeat(seatID int) error {
+func (m *MockDal) DeleteSeat(ctx context.Context, seatID int) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteSeat", seatID)
+	ret := m.ctrl.Call(m, "DeleteSeat", ctx, seatID)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // DeleteSeat indicates an expected call of DeleteSeat.
-func (mr *MockDalMockRecorder) DeleteSeat(seatID interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) DeleteSeat(ctx, seatID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSeat", reflect.TypeOf((*MockDal)(nil).DeleteSeat), seatID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSeat", reflect.TypeOf((*MockDal)(nil).DeleteSeat), ctx, seatID)
 }
 
 // DeleteUser mocks base method.
-func (m *MockDal) DeleteUser(userID int) error {
+func (m *MockDal) DeleteUser(ctx context.Context, userID int) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteUser", userID)
+	ret := m.ctrl.Call(m, "DeleteUser", ctx, userID)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // DeleteUser indicates an expected call of DeleteUser.
-func (mr *MockDalMockRecorder) DeleteUser(userID interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) DeleteUser(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUser", reflect.TypeOf((*MockDal)(nil).DeleteUser), userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUser", reflect.TypeOf((*MockDal)(nil).DeleteUser), ctx, userID)
 }
 
 // GetAdmin mocks base method.
-func (m *MockDal) GetAdmin(id int) (*model.Admin, error) {
+func (m *MockDal) GetAdmin(ctx context.Context, id int) (*model.Admin, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAdmin", id)
+	ret := m.ctrl.Call(m, "GetAdmin", ctx, id)
 	ret0, _ := ret[0].(*model.Admin)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAdmin indicates an expected call of GetAdmin.
-func (mr *MockDalMockRecorder) GetAdmin(id interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) GetAdmin(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAdmin", reflect.TypeOf((*MockDal)(nil).GetAdmin), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAdmin", reflect.TypeOf((*MockDal)(nil).GetAdmin), ctx, id)
 }
 
 // GetAdminByName mocks base method.
-func (m *MockDal) GetAdminByName(name string) (*model.Admin, error) {
+func (m *MockDal) GetAdminByName(ctx context.Context, name string) (*model.Admin, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAdminByName", name)
+	ret := m.ctrl.Call(m, "GetAdminByName", ctx, name)
 	ret0, _ := ret[0].(*model.Admin)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAdminByName indicates an expected call of GetAdminByName.
-func (mr *MockDalMockRecorder) GetAdminByName(name interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) GetAdminByName(ctx, name interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAdminByName", reflect.TypeOf((*MockDal)(nil).GetAdminByName), name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAdminByName", reflect.TypeOf((*MockDal)(nil).GetAdminByName), ctx, name)
 }
 
 // GetAdminWithPasswordByName mocks base method.
-func (m *MockDal) GetAdminWithPasswordByName(name string) (*model.Admin, error) {
+func (m *MockDal) GetAdminWithPasswordByName(ctx context.Context, name string) (*model.Admin, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAdminWithPasswordByName", name)
+	ret := m.ctrl.Call(m, "GetAdminWithPasswordByName", ctx, name)
 	ret0, _ := ret[0].(*model.Admin)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAdminWithPasswordByName indicates an expected call of GetAdminWithPasswordByName.
-func (mr *MockDalMockRecorder) GetAdminWithPasswordByName(name interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) GetAdminWithPasswordByName(ctx, name interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAdminWithPasswordByName", reflect.TypeOf((*MockDal)(nil).GetAdminWithPasswordByName), name)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAdminWithPasswordByName", reflect.TypeOf((*MockDal)(nil).GetAdminWithPasswordByName), ctx, name)
 }
 
 // GetAllAdmins mocks base method.
-func (m *MockDal) GetAllAdmins(pager *model.Pager) ([]*model.Admin, error) {
+func (m *MockDal) GetAllAdmins(ctx context.Context, pager *model.Pager) ([]*model.Admin, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAllAdmins", pager)
+	ret := m.ctrl.Call(m, "GetAllAdmins", ctx, pager)
 	ret0, _ := ret[0].([]*model.Admin)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAllAdmins indicates an expected call of GetAllAdmins.
-func (mr *MockDalMockRecorder) GetAllAdmins(pager interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) GetAllAdmins(ctx, pager interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllAdmins", reflect.TypeOf((*MockDal)(nil).GetAllAdmins), pager)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllAdmins", reflect.TypeOf((*MockDal)(nil).GetAllAdmins), ctx, pager)
 }
 
 // GetAllRooms mocks base method.
-func (m *MockDal) GetAllRooms(pager *model.Pager) ([]*model.Room, error) {
+func (m *MockDal) GetAllRooms(ctx context.Context, pager *model.Pager) ([]*model.Room, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAllRooms", pager)
+	ret := m.ctrl.Call(m, "GetAllRooms", ctx, pager)
 	ret0, _ := ret[0].([]*model.Room)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAllRooms indicates an expected call of GetAllRooms.
-func (mr *MockDalMockRecorder) GetAllRooms(pager interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) GetAllRooms(ctx, pager interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllRooms", reflect.TypeOf((*MockDal)(nil).GetAllRooms), pager)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllRooms", reflect.TypeOf((*MockDal)(nil).GetAllRooms), ctx, pager)
 }
 
 // GetAllSeats mocks base method.
-func (m *MockDal) GetAllSeats(roomID int, pager *model.Pager) ([]*model.Seat, error) {
+func (m *MockDal) GetAllSeats(ctx context.Context, roomID int, pager *model.Pager) ([]*model.Seat, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAllSeats", roomID, pager)
+	ret := m.ctrl.Call(m, "GetAllSeats", ctx, roomID, pager)
 	ret0, _ := ret[0].([]*model.Seat)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAllSeats indicates an expected call of GetAllSeats.
-func (mr *MockDalMockRecorder) GetAllSeats(roomID, pager interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) GetAllSeats(ctx, roomID, pager interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllSeats", reflect.TypeOf((*MockDal)(nil).GetAllSeats), roomID, pager)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllSeats", reflect.TypeOf((*MockDal)(nil).GetAllSeats), ctx, roomID, pager)
 }
 
 // GetAllUsers mocks base method.
-func (m *MockDal) GetAllUsers(pager *model.Pager) ([]*model.User, error) {
+func (m *MockDal) GetAllUsers(ctx context.Context, pager *model.Pager) ([]*model.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAllUsers", pager)
+	ret := m.ctrl.Call(m, "GetAllUsers", ctx, pager)
 	ret0, _ := ret[0].([]*model.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAllUsers indicates an expected call of GetAllUsers.
-func (mr *MockDalMockRecorder) GetAllUsers(pager interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) GetAllUsers(ctx, pager interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllUsers", reflect.TypeOf((*MockDal)(nil).GetAllUsers), pager)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllUsers", reflect.TypeOf((*MockDal)(nil).GetAllUsers), ctx, pager)
 }
 
 // GetResv mocks base method.
-func (m *MockDal) GetResv(resvID int) (*model.Resv, error) {
+func (m *MockDal) GetResv(ctx context.Context, resvID int) (*model.Resv, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetResv", resvID)
+	ret := m.ctrl.Call(m, "GetResv", ctx, resvID)
 	ret0, _ := ret[0].(*model.Resv)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetResv indicates an expected call of GetResv.
-func (mr *MockDalMockRecorder) GetResv(resvID interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) GetResv(ctx, resvID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetResv", reflect.TypeOf((*MockDal)(nil).GetResv), resvID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetResv", reflect.TypeOf((*MockDal)(nil).GetResv), ctx, resvID)
 }
 
 // GetResvsBySeat mocks base method.
-func (m *MockDal) GetResvsBySeat(seatID int, pager *model.Pager) ([]*model.Resv, error) {
+func (m *MockDal) GetResvsBySeat(ctx context.Context, seatID int, pager *model.Pager) ([]*model.Resv, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetResvsBySeat", seatID, pager)
+	ret := m.ctrl.Call(m, "GetResvsBySeat", ctx, seatID, pager)
 	ret0, _ := ret[0].([]*model.Resv)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetResvsBySeat indicates an expected call of GetResvsBySeat.
-func (mr *MockDalMockRecorder) GetResvsBySeat(seatID, pager interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) GetResvsBySeat(ctx, seatID, pager interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetResvsBySeat", reflect.TypeOf((*MockDal)(nil).GetResvsBySeat), seatID, pager)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetResvsBySeat", reflect.TypeOf((*MockDal)(nil).GetResvsBySeat), ctx, seatID, pager)
 }
 
 // GetResvsByUser mocks base method.
-func (m *MockDal) GetResvsByUser(userID int, pager *model.Pager) ([]*model.Resv, error) {
+func (m *MockDal) GetResvsByUser(ctx context.Context, userID int, pager *model.Pager) ([]*model.Resv, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetResvsByUser", userID, pager)
+	ret := m.ctrl.Call(m, "GetResvsByUser", ctx, userID, pager)
 	ret0, _ := ret[0].([]*model.Resv)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetResvsByUser indicates an expected call of GetResvsByUser.
-func (mr *MockDalMockRecorder) GetResvsByUser(userID, pager interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) GetResvsByUser(ctx, userID, pager interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetResvsByUser", reflect.TypeOf((*MockDal)(nil).GetResvsByUser), userID, pager)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetResvsByUser", reflect.TypeOf((*MockDal)(nil).GetResvsByUser), ctx, userID, pager)
 }
 
 // GetRoom mocks base method.
-func (m *MockDal) GetRoom(id int) (*model.Room, error) {
+func (m *MockDal) GetRoom(ctx context.Context, id int) (*model.Room, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetRoom", id)
+	ret := m.ctrl.Call(m, "GetRoom", ctx, id)
 	ret0, _ := ret[0].(*model.Room)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetRoom indicates an expected call of GetRoom.
-func (mr *MockDalMockRecorder) GetRoom(id interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) GetRoom(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRoom", reflect.TypeOf((*MockDal)(nil).GetRoom), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRoom", reflect.TypeOf((*MockDal)(nil).GetRoom), ctx, id)
 }
 
 // GetSeat mocks base method.
-func (m *MockDal) GetSeat(id int) (*model.Seat, error) {
+func (m *MockDal) GetSeat(ctx context.Context, id int) (*model.Seat, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetSeat", id)
+	ret := m.ctrl.Call(m, "GetSeat", ctx, id)
 	ret0, _ := ret[0].(*model.Seat)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetSeat indicates an expected call of GetSeat.
-func (mr *MockDalMockRecorder) GetSeat(id interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) GetSeat(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSeat", reflect.TypeOf((*MockDal)(nil).GetSeat), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSeat", reflect.TypeOf((*MockDal)(nil).GetSeat), ctx, id)
 }
 
 // GetUser mocks base method.
-func (m *MockDal) GetUser(id int) (*model.User, error) {
+func (m *MockDal) GetUser(ctx context.Context, id int) (*model.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUser", id)
+	ret := m.ctrl.Call(m, "GetUser", ctx, id)
 	ret0, _ := ret[0].(*model.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetUser indicates an expected call of GetUser.
-func (mr *MockDalMockRecorder) GetUser(id interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) GetUser(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockDal)(nil).GetUser), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockDal)(nil).GetUser), ctx, id)
 }
 
 // GetUserByName mocks base method.
-func (m *MockDal) GetUserByName(username string) (*model.User, error) {
+func (m *MockDal) GetUserByName(ctx context.Context, username string) (*model.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUserByName", username)
+	ret := m.ctrl.Call(m, "GetUserByName", ctx, username)
 	ret0, _ := ret[0].(*model.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetUserByName indicates an expected call of GetUserByName.
-func (mr *MockDalMockRecorder) GetUserByName(username interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) GetUserByName(ctx, username interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByName", reflect.TypeOf((*MockDal)(nil).GetUserByName), username)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByName", reflect.TypeOf((*MockDal)(nil).GetUserByName), ctx, username)
 }
 
 // GetUserWithPasswordByName mocks base method.
-func (m *MockDal) GetUserWithPasswordByName(username string) (*model.User, error) {
+func (m *MockDal) GetUserWithPasswordByName(ctx context.Context, username string) (*model.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUserWithPasswordByName", username)
+	ret := m.ctrl.Call(m, "GetUserWithPasswordByName", ctx, username)
 	ret0, _ := ret[0].(*model.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetUserWithPasswordByName indicates an expected call of GetUserWithPasswordByName.
-func (mr *MockDalMockRecorder) GetUserWithPasswordByName(username interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) GetUserWithPasswordByName(ctx, username interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserWithPasswordByName", reflect.TypeOf((*MockDal)(nil).GetUserWithPasswordByName), username)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserWithPasswordByName", reflect.TypeOf((*MockDal)(nil).GetUserWithPasswordByName), ctx, username)
 }
 
 // UpdateResvStatus mocks base method.
-func (m *MockDal) UpdateResvStatus(resv *model.Resv) (*model.Resv, error) {
+func (m *MockDal) UpdateResvStatus(ctx context.Context, resv *model.Resv) (*model.Resv, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateResvStatus", resv)
+	ret := m.ctrl.Call(m, "UpdateResvStatus", ctx, resv)
 	ret0, _ := ret[0].(*model.Resv)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // UpdateResvStatus indicates an expected call of UpdateResvStatus.
-func (mr *MockDalMockRecorder) UpdateResvStatus(resv interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) UpdateResvStatus(ctx, resv interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateResvStatus", reflect.TypeOf((*MockDal)(nil).UpdateResvStatus), resv)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateResvStatus", reflect.TypeOf((*MockDal)(nil).UpdateResvStatus), ctx, resv)
 }
 
 // UpdateRoom mocks base method.
-func (m *MockDal) UpdateRoom(room *model.Room) (*model.Room, error) {
+func (m *MockDal) UpdateRoom(ctx context.Context, room *model.Room) (*model.Room, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateRoom", room)
+	ret := m.ctrl.Call(m, "UpdateRoom", ctx, room)
 	ret0, _ := ret[0].(*model.Room)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // UpdateRoom indicates an expected call of UpdateRoom.
-func (mr *MockDalMockRecorder) UpdateRoom(room interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) UpdateRoom(ctx, room interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateRoom", reflect.TypeOf((*MockDal)(nil).UpdateRoom), room)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateRoom", reflect.TypeOf((*MockDal)(nil).UpdateRoom), ctx, room)
 }
 
 // UpdateSeat mocks base method.
-func (m *MockDal) UpdateSeat(seat *model.Seat) (*model.Seat, error) {
+func (m *MockDal) UpdateSeat(ctx context.Context, seat *model.Seat) (*model.Seat, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateSeat", seat)
+	ret := m.ctrl.Call(m, "UpdateSeat", ctx, seat)
 	ret0, _ := ret[0].(*model.Seat)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // UpdateSeat indicates an expected call of UpdateSeat.
-func (mr *MockDalMockRecorder) UpdateSeat(seat interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) UpdateSeat(ctx, seat interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateSeat", reflect.TypeOf((*MockDal)(nil).UpdateSeat), seat)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateSeat", reflect.TypeOf((*MockDal)(nil).UpdateSeat), ctx, seat)
 }
 
 // UpdateUser mocks base method.
-func (m *MockDal) UpdateUser(user *model.User) (*model.User, error) {
+func (m *MockDal) UpdateUser(ctx context.Context, user *model.User) (*model.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateUser", user)
+	ret := m.ctrl.Call(m, "UpdateUser", ctx, user)
 	ret0, _ := ret[0].(*model.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // UpdateUser indicates an expected call of UpdateUser.
-func (mr *MockDalMockRecorder) UpdateUser(user interface{}) *gomock.Call {
+func (mr *MockDalMockRecorder) UpdateUser(ctx, user interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUser", reflect.TypeOf((*MockDal)(nil).UpdateUser), user)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUser", reflect.TypeOf((*MockDal)(nil).UpdateUser), ctx, user)
 }

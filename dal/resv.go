@@ -1,6 +1,7 @@
 package dal
 
 import (
+	"context"
 	"errors"
 	"time"
 
@@ -11,7 +12,7 @@ import (
 	"github.com/csguojin/reserve/util/logger"
 )
 
-func (d *dal) CreateResv(resv *model.Resv) (*model.Resv, error) {
+func (d *dal) CreateResv(ctx context.Context, resv *model.Resv) (*model.Resv, error) {
 	tx := d.db.Begin()
 	if tx.Error != nil {
 		logger.L.Errorln(tx.Error)
@@ -47,7 +48,7 @@ func (d *dal) CreateResv(resv *model.Resv) (*model.Resv, error) {
 		return nil, err
 	}
 
-	if ok := checkRoomResv(room, resv); !ok {
+	if ok := checkRoomResv(ctx, room, resv); !ok {
 		tx.Rollback()
 		err := errors.New("room is not available")
 		logger.L.Errorln(err)
@@ -112,7 +113,7 @@ func (d *dal) CreateResv(resv *model.Resv) (*model.Resv, error) {
 	return resv, nil
 }
 
-func checkRoomResv(room *model.Room, resv *model.Resv) bool {
+func checkRoomResv(ctx context.Context, room *model.Room, resv *model.Resv) bool {
 	openTime, err := time.Parse(time.RFC3339, resv.StartTime.Format("2006-01-02T")+room.OpenTime+"+08:00")
 	if err != nil {
 		logger.L.Errorln("room opentime format error", room.OpenTime, err)
@@ -127,7 +128,7 @@ func checkRoomResv(room *model.Room, resv *model.Resv) bool {
 	return resv.StartTime.Before(*resv.EndTime) && resv.StartTime.After(openTime) && resv.EndTime.Before(closeTime)
 }
 
-func (d *dal) GetResv(resvID int) (*model.Resv, error) {
+func (d *dal) GetResv(ctx context.Context, resvID int) (*model.Resv, error) {
 	resv := &model.Resv{ID: resvID}
 	err := d.db.First(&resv, resvID).Error
 	if err != nil {
@@ -137,7 +138,7 @@ func (d *dal) GetResv(resvID int) (*model.Resv, error) {
 	return resv, nil
 }
 
-func (d *dal) UpdateResvStatus(resv *model.Resv) (*model.Resv, error) {
+func (d *dal) UpdateResvStatus(ctx context.Context, resv *model.Resv) (*model.Resv, error) {
 	err := d.db.Model(&model.Resv{}).Where("id = ?", resv.ID).Updates(
 		&model.Resv{
 			SigninTime:  resv.SigninTime,
@@ -148,10 +149,10 @@ func (d *dal) UpdateResvStatus(resv *model.Resv) (*model.Resv, error) {
 		logger.L.Errorln(err)
 		return nil, err
 	}
-	return d.GetResv(resv.ID)
+	return d.GetResv(ctx, resv.ID)
 }
 
-func (d *dal) UpdateResvStartEndTime(newResv *model.Resv) (*model.Resv, error) {
+func (d *dal) UpdateResvStartEndTime(ctx context.Context, newResv *model.Resv) (*model.Resv, error) {
 	tx := d.db.Begin()
 	if tx.Error != nil {
 		logger.L.Errorln(tx.Error)
@@ -240,10 +241,10 @@ func (d *dal) UpdateResvStartEndTime(newResv *model.Resv) (*model.Resv, error) {
 		return nil, err
 	}
 
-	return d.GetResv(newResv.ID)
+	return d.GetResv(ctx, newResv.ID)
 }
 
-func (d *dal) GetResvsByUser(userID int, pager *model.Pager) ([]*model.Resv, error) {
+func (d *dal) GetResvsByUser(ctx context.Context, userID int, pager *model.Pager) ([]*model.Resv, error) {
 	var resvs []*model.Resv
 	offset := (pager.Page - 1) * pager.PerPage
 	err := d.db.Offset(offset).Limit(pager.PerPage).Where(&model.Resv{UserID: userID}).Find(&resvs).Error
@@ -254,7 +255,7 @@ func (d *dal) GetResvsByUser(userID int, pager *model.Pager) ([]*model.Resv, err
 	return resvs, nil
 }
 
-func (d *dal) GetResvsBySeat(seatID int, pager *model.Pager) ([]*model.Resv, error) {
+func (d *dal) GetResvsBySeat(ctx context.Context, seatID int, pager *model.Pager) ([]*model.Resv, error) {
 	var resvs []*model.Resv
 	offset := (pager.Page - 1) * pager.PerPage
 	err := d.db.Offset(offset).Limit(pager.PerPage).Where(&model.Resv{SeatID: seatID}).Find(&resvs).Offset(offset).Limit(pager.PerPage).Error
