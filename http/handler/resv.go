@@ -105,7 +105,7 @@ func (h *HandlerStruct) CreateResvHandler(c *gin.Context) {
 		resv.EndTime == nil ||
 		!resv.EndTime.After(*resv.StartTime) ||
 		resv.EndTime.Sub(*resv.StartTime) >= time.Hour*24 ||
-		!(resv.StartTime.Minute()%10 == 0) || !(resv.EndTime.Minute()%10 == 0) {
+		!(resv.StartTime.Minute()%5 == 0) || !(resv.EndTime.Minute()%5 == 0) {
 		logger.L.Errorln(util.ErrResvTimeIllegal)
 		c.JSON(http.StatusBadRequest, gin.H{"error": util.ErrResvTimeIllegal.Error()})
 		return

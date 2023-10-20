@@ -226,10 +226,6 @@ func (d *dal) createResvOnlyMySQL(ctx context.Context, resv *model.Resv) (*model
 		return nil, util.ErrResvUserTimeConflict
 	}
 
-	now := time.Now()
-	resv.CreateTime = &now
-	resv.Status = 0
-
 	if err := tx.Create(resv).Error; err != nil {
 		tx.Rollback()
 		logger.L.Errorln(err)

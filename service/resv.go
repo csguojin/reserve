@@ -11,6 +11,10 @@ import (
 )
 
 func (s *svc) CreateResv(ctx context.Context, resv *model.Resv) (*model.Resv, error) {
+	now := time.Now()
+	resv.CreateTime = &now
+	resv.Status = 0
+
 	resv, err := s.dal.CreateResv(ctx, resv)
 	if err != nil {
 		logger.L.Errorln(err)
