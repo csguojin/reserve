@@ -19,51 +19,26 @@ func (d *dal) CreateResv(ctx context.Context, resv *model.Resv) (*model.Resv, er
 		return d.createResvOnlyMySQL(ctx, resv)
 	}
 
+	seatDateKey := fmt.Sprintf("seat:%d:%s", resv.SeatID, resv.StartTime.Format("20060102"))
+	userDateKey := fmt.Sprintf("user:%d:%s", resv.UserID, resv.StartTime.Format("20060102"))
+
 	lockKeyUser := fmt.Sprintf("lock:user:%d", resv.UserID)
 	lockValue := generateRandomString(16)
-	lockAcquired, err := d.rdb.SetNX(ctx, lockKeyUser, lockValue, time.Minute).Result()
-	if err != nil {
-		logger.L.Errorln("Error acquiring lock:", err)
+
+	ok, err := Lock(ctx, d.rdb, lockKeyUser, lockValue, time.Minute)
+	if !ok || err != nil {
+		logger.L.Errorln(err)
 		return nil, err
 	}
-	if !lockAcquired {
-		fmt.Println("Failed to acquire user lock. Cur user is performing an operation.")
-		return nil, err
-	}
+	defer UnLock(ctx, d.rdb, lockKeyUser, lockValue)
 
 	lockKeySeat := fmt.Sprintf("lock:seat:%d", resv.SeatID)
-	lockAcquired, err = d.rdb.SetNX(ctx, lockKeySeat, lockValue, time.Minute).Result()
-	if err != nil {
-		logger.L.Errorln("Error acquiring lock:", err)
+	ok, err = Lock(ctx, d.rdb, lockKeySeat, lockValue, time.Minute)
+	if !ok || err != nil {
+		logger.L.Errorln(err)
 		return nil, err
 	}
-	if !lockAcquired {
-		fmt.Println("Failed to acquire seat lock. Cur seat is performing an operation.")
-		return nil, err
-	}
-
-	defer func() {
-		script := `
-			if redis.call("get", KEYS[1]) == ARGV[1] then
-				return redis.call("del", KEYS[1])
-			else
-				return 0
-			end
-		`
-
-		_, err := d.rdb.Eval(ctx, script, []string{lockKeySeat}, lockValue).Result()
-		if err != nil {
-			logger.L.Errorln("Error releasing lock:", err)
-		}
-
-		_, err = d.rdb.Eval(ctx, script, []string{lockKeyUser}, lockValue).Result()
-		if err != nil {
-			logger.L.Errorln("Error releasing lock:", err)
-		}
-	}()
-
-	seatBitKey := fmt.Sprintf("seat:%d:%s", resv.SeatID, resv.StartTime.Format("20060102"))
-	userKey := fmt.Sprintf("user:%d:%s", resv.UserID, resv.StartTime.Format("20060102"))
+	defer UnLock(ctx, d.rdb, lockKeySeat, lockValue)
 
 	luaScript := `
 		local seatKey = KEYS[1]
@@ -95,7 +70,7 @@ func (d *dal) CreateResv(ctx context.Context, resv *model.Resv) (*model.Resv, er
 
 	startOffset, endOffset := resv.CalculateTimeBits(*resv.StartTime, *resv.EndTime)
 
-	result, err := d.rdb.Eval(ctx, luaScript, []string{seatBitKey, userKey}, startOffset, endOffset).Result()
+	result, err := d.rdb.Eval(ctx, luaScript, []string{seatDateKey, userDateKey}, startOffset, endOffset).Result()
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
@@ -133,7 +108,7 @@ func (d *dal) CreateResv(ctx context.Context, resv *model.Resv) (*model.Resv, er
 			return 'OK'
 		`
 
-		_, err2 := d.rdb.Eval(ctx, luaScript, []string{seatBitKey, userKey}, startOffset, endOffset).Result()
+		_, err2 := d.rdb.Eval(ctx, luaScript, []string{seatDateKey, userDateKey}, startOffset, endOffset).Result()
 		if err2 != nil {
 			logger.L.Errorln(err)
 			err = errors.New(err.Error() + err2.Error())
