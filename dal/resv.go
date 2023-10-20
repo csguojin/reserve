@@ -3,6 +3,8 @@ package dal
 import (
 	"context"
 	"errors"
+	"fmt"
+	"math/rand"
 	"time"
 
 	"gorm.io/gorm/clause"
@@ -13,6 +15,135 @@ import (
 )
 
 func (d *dal) CreateResv(ctx context.Context, resv *model.Resv) (*model.Resv, error) {
+	if d.rdb == nil {
+		return d.createResvOnlyMySQL(ctx, resv)
+	}
+
+	lockKeyUser := fmt.Sprintf("lock:user:%d", resv.UserID)
+	lockValue := generateRandomString(16)
+	lockAcquired, err := d.rdb.SetNX(ctx, lockKeyUser, lockValue, time.Minute).Result()
+	if err != nil {
+		logger.L.Errorln("Error acquiring lock:", err)
+		return nil, err
+	}
+	if !lockAcquired {
+		fmt.Println("Failed to acquire user lock. Cur user is performing an operation.")
+		return nil, err
+	}
+
+	lockKeySeat := fmt.Sprintf("lock:seat:%d", resv.SeatID)
+	lockAcquired, err = d.rdb.SetNX(ctx, lockKeySeat, lockValue, time.Minute).Result()
+	if err != nil {
+		logger.L.Errorln("Error acquiring lock:", err)
+		return nil, err
+	}
+	if !lockAcquired {
+		fmt.Println("Failed to acquire seat lock. Cur seat is performing an operation.")
+		return nil, err
+	}
+
+	defer func() {
+		script := `
+			if redis.call("get", KEYS[1]) == ARGV[1] then
+				return redis.call("del", KEYS[1])
+			else
+				return 0
+			end
+		`
+
+		_, err := d.rdb.Eval(ctx, script, []string{lockKeySeat}, lockValue).Result()
+		if err != nil {
+			logger.L.Errorln("Error releasing lock:", err)
+		}
+
+		_, err = d.rdb.Eval(ctx, script, []string{lockKeyUser}, lockValue).Result()
+		if err != nil {
+			logger.L.Errorln("Error releasing lock:", err)
+		}
+	}()
+
+	seatBitKey := fmt.Sprintf("seat:%d:%s", resv.SeatID, resv.StartTime.Format("20060102"))
+	userKey := fmt.Sprintf("user:%d:%s", resv.UserID, resv.StartTime.Format("20060102"))
+
+	luaScript := `
+		local seatKey = KEYS[1]
+		local userKey = KEYS[2]
+		local startOffset = tonumber(ARGV[1])
+		local endOffset = tonumber(ARGV[2])
+		
+		local seatBitCount = redis.call('BITCOUNT', seatKey, startOffset, endOffset)
+		local userBitCount = redis.call('BITCOUNT', userKey, startOffset, endOffset)
+		
+		if seatBitCount == 0 and userBitCount == 0 then
+			local function setBitField(key, offset, value)
+				return {'SET', 'u1', offset, value}
+			end
+		
+			local seatBitFieldCmds = {}
+			local userBitFieldCmds = {}
+		
+			for i = startOffset, endOffset do
+				table.insert(seatBitFieldCmds, setBitField(seatKey, i, 1))
+				table.insert(userBitFieldCmds, setBitField(userKey, i, 1))
+			end
+		
+			redis.call('BITFIELD', unpack(seatBitFieldCmds))
+			redis.call('BITFIELD', unpack(userBitFieldCmds))
+		
+			return 'OK'
+		else
+			return 'BITCOUNT not equal to 0'
+		end
+	`
+
+	_, err = d.rdb.Eval(context.Background(), luaScript, []string{seatBitKey, userKey}, resv.StartTime, resv.EndTime, resv.UserID).Result()
+	if err != nil {
+		logger.L.Errorln(err)
+		return nil, err
+	}
+
+	err = d.db.Create(resv).Error
+	if err != nil {
+		logger.L.Errorln(err)
+
+		// Handle rollback Redis operations
+		luaScript = `
+			local seatKey = KEYS[1]
+			local userKey = KEYS[2]
+			local startOffset = tonumber(ARGV[1])
+			local endOffset = tonumber(ARGV[2])
+
+			local function setBitField(key, offset, value)
+				return {'SET', 'u1', offset, value}
+			end
+
+			local seatBitFieldCmds = {}
+			local userBitFieldCmds = {}
+
+			for i = startOffset, endOffset do
+				table.insert(seatBitFieldCmds, setBitField(seatKey, i, 0))
+				table.insert(userBitFieldCmds, setBitField(userKey, i, 0))
+			end
+
+			redis.call('BITFIELD', unpack(seatBitFieldCmds))
+			redis.call('BITFIELD', unpack(userBitFieldCmds))
+
+			return 'OK'
+		`
+
+		_, err2 := d.rdb.Eval(context.Background(), luaScript, []string{seatBitKey, userKey}, resv.StartTime, resv.EndTime, resv.UserID).Result()
+		if err2 != nil {
+			logger.L.Errorln(err)
+			err = errors.New(err.Error() + err2.Error())
+		}
+
+		return nil, err
+	}
+
+	return resv, nil
+}
+
+func (d *dal) createResvOnlyMySQL(ctx context.Context, resv *model.Resv) (*model.Resv, error) {
 	tx := d.db.Begin()
 	if tx.Error != nil {
 		logger.L.Errorln(tx.Error)
@@ -264,4 +395,14 @@ func (d *dal) GetResvsBySeat(ctx context.Context, seatID int, pager *model.Pager
 		return nil, err
 	}
 	return resvs, nil
+}
+
+func generateRandomString(length int) string {
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
+	result := make([]byte, length)
+	for i := range result {
+		result[i] = charset[seededRand.Intn(len(charset))]
+	}
+	return string(result)
 }

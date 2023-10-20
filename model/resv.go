@@ -19,3 +19,20 @@ type Resv struct {
 func (Resv) TableName() string {
 	return "reservation_table"
 }
+
+func (r Resv) CalculateTimeBits(startTime, endTime time.Time) (int, int) {
+	if !endTime.After(startTime) {
+		return -1, -1
+	}
+	startHour, startMin, _ := startTime.Clock()
+	startBit := (startHour*60 + startMin) / 5
+
+	endHour, endMin, endSec := endTime.Clock()
+	endMinutes := endHour*60 + endMin
+	if endMin%5 == 0 && endSec == 0 {
+		endMinutes--
+	}
+	endBit := endMinutes / 5
+
+	return startBit, endBit
+}
