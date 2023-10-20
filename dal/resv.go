@@ -71,24 +71,21 @@ func (d *dal) CreateResv(ctx context.Context, resv *model.Resv) (*model.Resv, er
 		local startOffset = tonumber(ARGV[1])
 		local endOffset = tonumber(ARGV[2])
 		
-		local seatBitCount = redis.call('BITCOUNT', seatKey, startOffset, endOffset)
-		local userBitCount = redis.call('BITCOUNT', userKey, startOffset, endOffset)
+		local seatBitCount = redis.call('BITCOUNT', seatKey, startOffset, endOffset, 'BIT')
+		local userBitCount = redis.call('BITCOUNT', userKey, startOffset, endOffset, 'BIT')
 		
 		if seatBitCount == 0 and userBitCount == 0 then
-			local function setBitField(key, offset, value)
-				return {'SET', 'u1', offset, value}
-			end
-		
-			local seatBitFieldCmds = {}
-			local userBitFieldCmds = {}
-		
+			local bitfieldArgs = {}
+
 			for i = startOffset, endOffset do
-				table.insert(seatBitFieldCmds, setBitField(seatKey, i, 1))
-				table.insert(userBitFieldCmds, setBitField(userKey, i, 1))
+				table.insert(bitfieldArgs, "SET")
+				table.insert(bitfieldArgs, "u1")
+				table.insert(bitfieldArgs, i)
+				table.insert(bitfieldArgs, 1)
 			end
-		
-			redis.call('BITFIELD', unpack(seatBitFieldCmds))
-			redis.call('BITFIELD', unpack(userBitFieldCmds))
+
+			redis.call('BITFIELD', seatKey, unpack(bitfieldArgs))
+			redis.call('BITFIELD', userKey, unpack(bitfieldArgs))
 		
 			return 'OK'
 		else
@@ -96,8 +93,16 @@ func (d *dal) CreateResv(ctx context.Context, resv *model.Resv) (*model.Resv, er
 		end
 	`
 
-	_, err = d.rdb.Eval(context.Background(), luaScript, []string{seatBitKey, userKey}, resv.StartTime, resv.EndTime, resv.UserID).Result()
+	startOffset, endOffset := resv.CalculateTimeBits(*resv.StartTime, *resv.EndTime)
+
+	result, err := d.rdb.Eval(ctx, luaScript, []string{seatBitKey, userKey}, startOffset, endOffset).Result()
 	if err != nil {
+		logger.L.Errorln(err)
+		return nil, err
+	}
+
+	if result.(string) != "OK" {
+		err = errors.New(result.(string))
 		logger.L.Errorln(err)
 		return nil, err
 	}
@@ -113,25 +118,22 @@ func (d *dal) CreateResv(ctx context.Context, resv *model.Resv) (*model.Resv, er
 			local startOffset = tonumber(ARGV[1])
 			local endOffset = tonumber(ARGV[2])
 
-			local function setBitField(key, offset, value)
-				return {'SET', 'u1', offset, value}
-			end
-
-			local seatBitFieldCmds = {}
-			local userBitFieldCmds = {}
+			local bitfieldArgs = {}
 
 			for i = startOffset, endOffset do
-				table.insert(seatBitFieldCmds, setBitField(seatKey, i, 0))
-				table.insert(userBitFieldCmds, setBitField(userKey, i, 0))
+				table.insert(bitfieldArgs, "SET")
+				table.insert(bitfieldArgs, "u1")
+				table.insert(bitfieldArgs, i)
+				table.insert(bitfieldArgs, 0)
 			end
 
-			redis.call('BITFIELD', unpack(seatBitFieldCmds))
-			redis.call('BITFIELD', unpack(userBitFieldCmds))
+			redis.call('BITFIELD', seatKey, unpack(bitfieldArgs))
+			redis.call('BITFIELD', userKey, unpack(bitfieldArgs))
 
 			return 'OK'
 		`
 
-		_, err2 := d.rdb.Eval(context.Background(), luaScript, []string{seatBitKey, userKey}, resv.StartTime, resv.EndTime, resv.UserID).Result()
+		_, err2 := d.rdb.Eval(ctx, luaScript, []string{seatBitKey, userKey}, startOffset, endOffset).Result()
 		if err2 != nil {
 			logger.L.Errorln(err)
 			err = errors.New(err.Error() + err2.Error())
