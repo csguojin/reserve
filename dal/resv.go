@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"strconv"
 	"time"
 
 	"gorm.io/gorm/clause"
@@ -19,9 +20,6 @@ func (d *dal) CreateResv(ctx context.Context, resv *model.Resv) (*model.Resv, er
 		return d.createResvOnlyMySQL(ctx, resv)
 	}
 
-	seatDateKey := fmt.Sprintf("seat:%d:%s", resv.SeatID, resv.StartTime.Format("20060102"))
-	userDateKey := fmt.Sprintf("user:%d:%s", resv.UserID, resv.StartTime.Format("20060102"))
-
 	lockKeyUser := fmt.Sprintf("lock:user:%d", resv.UserID)
 	lockValue := generateRandomString(16)
 
@@ -32,6 +30,38 @@ func (d *dal) CreateResv(ctx context.Context, resv *model.Resv) (*model.Resv, er
 	}
 	defer UnLock(ctx, d.rdb, lockKeyUser, lockValue)
 
+	userDateKey := fmt.Sprintf("user:%d:%s", resv.UserID, resv.StartTime.Format("20060102"))
+
+	exists, err := d.rdb.Exists(ctx, userDateKey).Result()
+	if err != nil || exists != 1 {
+		logger.L.Warnln(err)
+
+		resvs, err := d.GetResvsByUserDate(ctx, resv.UserID, *resv.StartTime)
+		if err != nil {
+			logger.L.Errorln(err)
+			return nil, err
+		}
+
+		var args []interface{}
+		for _, v := range resvs {
+			s, e := v.CalculateTimeBits(*v.StartTime, *v.EndTime)
+			for i := s; i <= e; i++ {
+				args = append(args, "SET", "u1", strconv.Itoa(i), "1")
+			}
+		}
+
+		err = d.rdb.BitField(ctx, userDateKey, args...).Err()
+		if err != nil {
+			logger.L.Errorln(err)
+			return nil, err
+		}
+
+		err = d.rdb.Expire(ctx, userDateKey, time.Hour).Err()
+		if err != nil {
+			logger.L.Errorln(err)
+		}
+	}
+
 	lockKeySeat := fmt.Sprintf("lock:seat:%d", resv.SeatID)
 	ok, err = Lock(ctx, d.rdb, lockKeySeat, lockValue, time.Minute)
 	if !ok || err != nil {
@@ -39,6 +69,37 @@ func (d *dal) CreateResv(ctx context.Context, resv *model.Resv) (*model.Resv, er
 		return nil, err
 	}
 	defer UnLock(ctx, d.rdb, lockKeySeat, lockValue)
+
+	seatDateKey := fmt.Sprintf("seat:%d:%s", resv.SeatID, resv.StartTime.Format("20060102"))
+	exists, err = d.rdb.Exists(ctx, seatDateKey).Result()
+	if err != nil || exists != 1 {
+		logger.L.Warnln(err)
+
+		resvs, err := d.GetResvsBySeatDate(ctx, resv.SeatID, *resv.StartTime)
+		if err != nil {
+			logger.L.Errorln(err)
+			return nil, err
+		}
+
+		var args []interface{}
+		for _, v := range resvs {
+			s, e := v.CalculateTimeBits(*v.StartTime, *v.EndTime)
+			for i := s; i <= e; i++ {
+				args = append(args, "SET", "u1", strconv.Itoa(i), "1")
+			}
+		}
+
+		err = d.rdb.BitField(ctx, seatDateKey, args...).Err()
+		if err != nil {
+			logger.L.Errorln(err)
+			return nil, err
+		}
+
+		err = d.rdb.Expire(ctx, userDateKey, 3*24*time.Hour).Err()
+		if err != nil {
+			logger.L.Errorln(err)
+		}
+	}
 
 	luaScript := `
 		local seatKey = KEYS[1]
@@ -359,10 +420,42 @@ func (d *dal) GetResvsByUser(ctx context.Context, userID int, pager *model.Pager
 	return resvs, nil
 }
 
+func (d *dal) GetResvsByUserDate(ctx context.Context, userID int, date time.Time) ([]*model.Resv, error) {
+	var resvs []*model.Resv
+	targetDate := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, time.UTC)
+	err := d.db.Where(
+		"user_id = ? AND start_time >= ? AND start_time < ?",
+		userID,
+		targetDate,
+		targetDate.AddDate(0, 0, 1),
+	).Find(&resvs).Error
+	if err != nil {
+		logger.L.Errorln(err)
+		return nil, err
+	}
+	return resvs, nil
+}
+
 func (d *dal) GetResvsBySeat(ctx context.Context, seatID int, pager *model.Pager) ([]*model.Resv, error) {
 	var resvs []*model.Resv
 	offset := (pager.Page - 1) * pager.PerPage
 	err := d.db.Offset(offset).Limit(pager.PerPage).Where(&model.Resv{SeatID: seatID}).Find(&resvs).Offset(offset).Limit(pager.PerPage).Error
+	if err != nil {
+		logger.L.Errorln(err)
+		return nil, err
+	}
+	return resvs, nil
+}
+
+func (d *dal) GetResvsBySeatDate(ctx context.Context, seatID int, date time.Time) ([]*model.Resv, error) {
+	var resvs []*model.Resv
+	targetDate := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, time.UTC)
+	err := d.db.Where(
+		"user_id = ? AND start_time >= ? AND start_time < ?",
+		seatID,
+		targetDate,
+		targetDate.AddDate(0, 0, 1),
+	).Find(&resvs).Error
 	if err != nil {
 		logger.L.Errorln(err)
 		return nil, err
