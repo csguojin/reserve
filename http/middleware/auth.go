@@ -124,5 +124,12 @@ func checkAuth(c *gin.Context, key string) (jwt.MapClaims, error) {
 		return nil, util.ErrTokenInvalid
 	}
 
+	if claims["ip"] == nil {
+		return nil, util.ErrTokenInvalid
+	}
+	if c.ClientIP() != claims["ip"].(string) {
+		return nil, util.ErrTokenInvalid
+	}
+
 	return claims, nil
 }

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"net/http"
 	"strconv"
 
@@ -69,7 +70,7 @@ func (h *HandlerStruct) LoginHandler(c *gin.Context) {
 		return
 	}
 
-	token, err := h.svc.GenerateToken(c.Request.Context(), user)
+	token, err := h.svc.GenerateToken(context.WithValue(c.Request.Context(), "ip", c.ClientIP()), user)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

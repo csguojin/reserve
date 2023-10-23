@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"net/http"
 	"strconv"
 
@@ -69,7 +70,7 @@ func (h *HandlerStruct) AdminLoginHandler(c *gin.Context) {
 		return
 	}
 
-	token, err := h.svc.GenerateAdminToken(c.Request.Context(), admin)
+	token, err := h.svc.GenerateAdminToken(context.WithValue(c.Request.Context(), "ip", c.ClientIP()), admin)
 	if err != nil {
 		logger.L.Errorln(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

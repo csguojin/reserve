@@ -47,6 +47,7 @@ func (s *svc) GenerateToken(ctx context.Context, user *model.User) (string, erro
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"exp": time.Now().Add(time.Hour).Unix(),
 
+		"ip":       ctx.Value("ip"),
 		"userid":   strconv.Itoa(user.ID),
 		"username": user.Username,
 	})

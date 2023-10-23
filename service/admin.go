@@ -47,6 +47,7 @@ func (s *svc) GenerateAdminToken(ctx context.Context, admin *model.Admin) (strin
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"exp": time.Now().Add(time.Hour).Unix(),
 
+		"ip":        ctx.Value("ip"),
 		"adminid":   strconv.Itoa(admin.ID),
 		"adminname": admin.Name,
 	})
