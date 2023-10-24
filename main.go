@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 
@@ -21,6 +23,9 @@ func main() {
 	h := handler.NewHandler(svc)
 
 	router := gin.Default()
+
+	limiter := middleware.NewTokenBucketLimiter(600, 10, time.Second)
+	router.Use(middleware.RateLimiterMiddleware(limiter))
 
 	v1 := router.Group("api/v1")
 	{
