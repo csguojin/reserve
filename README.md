@@ -10,7 +10,7 @@ Clone the project:
 git clone https://github.com/csguojin/reserve
 ```
 
-Configure the MySQL connection and other parameters:
+Configure the MySQL and Redis connection and other parameters:
 
 ```shell
 vim ./config/config.yaml
@@ -27,6 +27,12 @@ If you are using Docker, you can build the Docker image for the project:
 ```shell
 docker build -t reserve:latest .
 docker run -p 8080:8080 reserve:latest
+```
+
+If you are using Docker Compose, you can easily deploy this project:
+
+```shell
+docker compose up -d
 ```
 
 ## API
